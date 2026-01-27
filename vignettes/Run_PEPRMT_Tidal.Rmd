@@ -1,10 +1,23 @@
 ---
-title: "Run PEPRMT-Tidal"
-output: html_document
-date: "2023-10-19"
-author: Patty Oikawa
-email: patty.oikawa@gmail.com
+title: "PEPRMT-Tidal_example_run"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{PEPRMT-Tidal_example_run}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(PEPRMT)
+```
+
 This code uses an example dataset from Oikawa et al. 2023 to run the PEPRMT-Tidal modules
 This dataset includes data from 5 eddy covariance towers located in tidal wetlands across the 3 coasts of the USA
 For more details about the sites and data sources see Oikawa et al. 2023
@@ -302,5 +315,3 @@ grid.arrange(US_EDN_CH4, US_SRR_CH4, US_STJ_CH4, US_LA1_CH4, US_PLM_CH4, ncol=1,
 
 
 ```
-
-
