@@ -14,15 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+This vignette uses an example dataset from Oikawa et al. (2023) to run the PEPRMT-Tidal modules
+This dataset includes data from 5 eddy covariance towers located in tidal wetlands across the 3 coasts of the USA.
+For more details about the sites and data sources see Oikawa et al. (2023).
+
+```{r setup, echo=FALSE, message=FALSE}
 library(PEPRMT)
-```
-
-This code uses an example dataset from Oikawa et al. 2023 to run the PEPRMT-Tidal modules
-This dataset includes data from 5 eddy covariance towers located in tidal wetlands across the 3 coasts of the USA
-For more details about the sites and data sources see Oikawa et al. 2023
-
-```{r, echo=FALSE, message=FALSE}
 library(pacman)
 p_load(R.matlab,
        here,
@@ -31,9 +28,8 @@ p_load(R.matlab,
        FME,
        tictoc,
        beepr,
-       Metrics)
-library(lubridate)
-library(gridExtra)
+       Metrics,
+       gridExtra)
 
 ```
 
@@ -41,13 +37,12 @@ library(gridExtra)
 #load in data
 #All data were sourced from the Ameriflux database or directly from site PIs, details about the data and acquisition are in Oikawa et al. 2023
 #Note: site column needs to be numeric, there is also a char site name column to help keep track
-All_sites_master <- read.csv("data_sets/All_sites_master.csv", header=TRUE) %>% 
+All_sites_master <- read.csv("../All_sites_master.csv", header=TRUE) %>% 
  dplyr::select(1:24) 
+example_data <- All_sites_master
 summary(All_sites_master)
 str(All_sites_master)
-
 ```
-
 
 
 ```{r}

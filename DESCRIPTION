@@ -1,11 +1,11 @@
 Package: PEPRMT
-Title: What the Package Does (One Line, Title Case)
+Title: Peatland Ecosystem Photosynthesis, Respiration and Methane Transport model
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Patty", "Oikawa", "Y.", "patty.oikawa@csueastbay.edu", role = c("aut", "cre"))
+    person("Abigail", "Lewis", "S. L.", "abigail.sl.lewis@gmail.com", role = c("aut"))
+Description: PEPRMT-Tidal is a one-dimensional process-based model that predicts gross primary productivity, ecosystem respiration and methane exchange in tidal wetlands at the daily time step. This package contains functions for PEPRMT-Tidal, an updated version of the PEPRMT model. This model is described in detail in Oikawa et al. (2024).
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -13,3 +13,6 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Depends: 
+    R (>= 3.5)
+LazyData: true
