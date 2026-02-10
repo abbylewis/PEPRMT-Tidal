@@ -1,56 +1,98 @@
-###################################################
-###  PEPRMT-Tidal Methane Module v1.0###
-###################################################
-
-# Developed by Patty Oikawa
-# patty.oikawa@gmail.com
-# Published in November 2023
-
-# About the model:
-# 1. Originally PEPRMT (the Peatland Ecosystem Photosynthesis and Methane Transport) model
-# was parameterized for restored freshwater wetlands in the Sacramento-San Joaquin River Delta, CA USA
-# Oikawa et al. 2017 https://doi.org/10.1002/2016JG003438
-# Presented here is an updated version that works for tidal wetlands
-# and inhibits CH4 production in response to salinity and nitrate (Oikawa et al. 2023)
-# 2. All PEPRMT modules use the same input structure (data) however not all models use all variables in the structure;
-# 3. All variables are at the daily time step.
-# 4. Modules are run in succession, first GPP, then Reco and last CH4
-
-
-# Inputs:
-# 1. Theta: a vector of 7 parameter values that were determined via MCMC Bayesian fitting
-# theta= <- c( 14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612,0.5120464, 486.4106939, 0.1020278 )
-# See Oikawa et al. 2023
-
-# 2. Data: a data frame containing 18 variables described at start of function.
-
-# 3. Wetland_type
-# - "wetland_type == 1" corresponds to a "freshwater peatland"
-# - "wetland_type == 2" corresponds to a "tidal wetland"
-
-# Outputs:
-# a data frame containing
-# 1. pulse_emission_total: total amount of methane emitted, which is the sum of plant-mediated + diffusive water fluxes.
-# 2. Plant_flux_net: net amount of methane released from plants.
-# 3. Hydro_flux: net amount of methane that transfer from water to atm.
-# 4. M1: pool of methane produced from soil carbon pool 1, the labile pool
-# 5. M2: pool of methane produced from soil carbon pool 2, the SOC pool
-# 6. trans2: fraction of CH4 released via plant-mediated transport
-
-# units of output
-# 1. pulse_emission_total: g C methane m^-2 day^-1
-# 2. Plant_flux_net: g C methane m^-2 day^-1
-# 3. Hydro_flux: g C methane m^-2 day^-1
-# 4. M1: g C methane m^-3 (includes top m3 of soil+water)
-# 5. M2: g C methane m^-3 (includes top m3 of soil+water)
-# 6. trans2: unitless
-
-library(tidyverse)
-library(magrittr)
-
-PEPRMT_CH4_FINAL <- function(theta,
-                             data,
-                             wetland_type) {
+#' Methane Exchange (CH4)
+#'
+#' Runs the PEPRMT methane production and transport module for freshwater
+#' peatlands or tidal wetlands at a daily time step.
+#'
+#' @param theta Numeric vector of length 8 containing calibrated parameter
+#'   values. Default values were determined via MCMC Bayesian fitting
+#'   (Oikawa et al. 2024).
+#' @param data Data frame containing 18 required columns used as model inputs.
+#'   See **Details** for expected column structure.
+#' @param wetland_type Integer indicating wetland class:
+#'   1 = Freshwater peatland, 2 = Tidal wetland.
+#'
+#' @description
+#' Methane production and transport module of the PEPRMT model (v1.0).
+#'
+#' @details
+#' The PEPRMT model was originally parameterized for restored freshwater
+#' wetlands in the Sacramento–San Joaquin River Delta, California, USA
+#' (Oikawa et al. 2017) and later updated for tidal wetlands with inhibition
+#' of methane production in response to salinity and nitrate
+#' (Oikawa et al. 2024).
+#'
+#' Modules are intended to be run sequentially:
+#' PEPRMT_GPP, then PEPRMT_Reco, then PEPRMT_CH4.
+#'
+#' All variables are expected at a daily time step.
+#'
+#' All PEPRMT modules use the same input structure, although not all variables
+#' are used in every module.
+#'
+#' **Expected data column order:**
+#' 1. Continuous day of year
+#' 2. Discontinuous day of year
+#' 3. Year
+#' 4. Air temperature (°C)
+#' 5. Water table depth (cm)
+#' 6. PAR (µmol m^-2 d^-1)
+#' 7. Leaf Area Index
+#' 8. Greenness Index
+#' 9. FPAR flag
+#' 10. Light Use Efficiency
+#' 11. Wetland age (years)
+#' 12. Salinity (ppt)
+#' 13. NO3 (mg L^-1)
+#' 14. Soil organic matter (g C m^-3)
+#' 15. Site identifier
+#' 16. Modeled GPP (g C m^-2 day^-1)
+#' 17. Modeled Reco (g C m^-2 day^-1)
+#' 18. Net ecosystem exchange (g C m^-2 day^-1)
+#'
+#' @returns Updated dataframe containing:
+#' \describe{
+#'   \item{pulse_emission_total}{total methane emitted
+#'     (g C CH4 m^-2 day^-1)}
+#'   \item{Plant_flux_net}{net methane flux via plant-mediated transport
+#'     (g C CH4 m^-2 day^-1)}
+#'   \item{Hydro_flux}{net diffusive methane flux from water to atmosphere
+#'     (g C CH4 m^-2 day^-1)}
+#'   \item{M1}{methane pool produced from labile soil carbon
+#'     (g C CH4 m^-3, top meter of soil and water)}
+#'   \item{M2}{methane pool produced from soil organic carbon
+#'     (g C CH4 m^-3, top meter of soil and water)}
+#'   \item{trans2}{fraction of methane released via plant-mediated transport
+#'     (unitless)}
+#' }
+#'
+#' @references
+#' Oikawa, P. Y., Jenerette, G. D., Knox, S. H., Sturtevant, C., Verfaillie,
+#' J., Dronova, I., Poindexter, C. M., Eichelmann, E., & Baldocchi, D. D.
+#' (2017). Evaluation of a hierarchy of models reveals importance of substrate
+#' limitation for predicting carbon dioxide and methane exchange in restored
+#' wetlands. Journal of Geophysical Research: Biogeosciences, 122(1), 145–167.
+#' https://doi.org/10.1002/2016JG003438
+#'
+#' Oikawa, P. Y., Sihi, D., Forbrich, I., Fluet-Chouinard, E., Najarro, M.,
+#' Thomas, O., Shahan, J., Arias-Ortiz, A., Russell, S., Knox, S. H.,
+#' McNicol, G., Wolfe, J., Windham-Myers, L., Stuart-Haentjens, E.,
+#' Bridgham, S. D., Needelman, B., Vargas, R., Schäfer, K., Ward, E. J.,
+#' Megonigal, P., & Holmquist, J. (2024). A New Coupled Biogeochemical
+#' Modeling Approach Provides Accurate Predictions of Methane and Carbon
+#' Dioxide Fluxes Across Diverse Tidal Wetlands. Journal of Geophysical
+#' Research: Biogeosciences, 129(10), e2023JG007943.
+#' https://doi.org/10.1029/2023JG007943
+#'
+#' @export
+#'
+#' @examples
+#' # Example
+#' # data(example_dataset)
+#' # theta <- c(14.90, 0.46, 16.78, 0.43, 15.88, 0.51, 486.41, 0.10)
+#' # out <- PEPRMT_CH4(theta, example_dataset, wetland_type = 2)
+PEPRMT_CH4 <- function(theta,
+                       data,
+                       wetland_type) {
   # Constants
   R <- 8.314 # J K-1 mol-1
 
@@ -364,8 +406,8 @@ PEPRMT_CH4_FINAL <- function(theta,
   }
 
   # combine iterations of loop and return all results
-  peprmtCH4 <- do.call("rbind", outcome_lst) %>%
-    as.data.frame(.)
+  peprmtCH4 <- do.call("rbind", outcome_lst) |>
+    as.data.frame()
 
   return(peprmtCH4)
 }

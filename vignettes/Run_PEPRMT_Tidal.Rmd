@@ -19,6 +19,7 @@ This dataset includes data from 5 eddy covariance towers located in tidal wetlan
 For more details about the sites and data sources see Oikawa et al. (2023).
 
 ```{r setup, echo=FALSE, message=FALSE}
+library(PEPRMT)
 library(pacman)
 p_load(
   R.matlab,
@@ -48,10 +49,8 @@ str(All_sites_master)
 ```{r}
 # First run GPP Module
 
-source("../R/PEPRMT_GPP_FINAL.R")
-
 GPP_theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
-GPP_mod <- PEPRMT_GPP_final(GPP_theta,
+GPP_mod <- PEPRMT_GPP(theta = GPP_theta,
   data = All_sites_master
 )
 
@@ -145,10 +144,8 @@ grid.arrange(US_EDN, US_SRR, US_STJ, US_LA1, US_PLM, ncol = 1, nrow = 5)
 # Add modeled GPP into data before running Reco module (16th column)
 All_sites_master[, 16] <- GPP_mod$GPP
 
-source("../R/PEPRMT_Reco_FINAL.R")
-
 Reco_theta <- c(18.41329, 1487.65701, 11.65972, 61.29611)
-Reco_mod <- PEPRMT_Reco_FINAL(Reco_theta,
+Reco_mod <- PEPRMT_Reco(Reco_theta,
   data = All_sites_master,
   wetland_type = 2
 )
@@ -241,10 +238,8 @@ grid.arrange(US_EDN_Reco, US_SRR_Reco, US_STJ_Reco, US_LA1_Reco, US_PLM_Reco, nc
 All_sites_master[, 17] <- Reco_mod$S1
 All_sites_master[, 18] <- Reco_mod$S2
 
-source("../R/PEPRMT_CH4_FINAL.R")
-
 CH4_theta <- c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 0.5120464, 486.4106939, 0.1020278)
-CH4_mod <- PEPRMT_CH4_FINAL(CH4_theta,
+CH4_mod <- PEPRMT_CH4(CH4_theta,
   data = All_sites_master,
   wetland_type = 2
 )
