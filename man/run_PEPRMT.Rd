@@ -4,14 +4,77 @@
 \alias{run_PEPRMT}
 \title{run_PEPRMT}
 \usage{
-run_PEPRMT(target)
+run_PEPRMT(data)
 }
 \arguments{
-\item{target}{target dataframe}
+\item{data}{Data frame containing 15 required columns used as model inputs.
+See \strong{Details} for expected column structure.}
 }
 \value{
-filled dataframe with model results
+Updated dataframe containing:
+\describe{
+\item{GPP}{gross primary productivity
+(g C CO2 m^-2 day^-1)}
+\item{APAR}{absorbed photosynthetically active radiation
+(umol m-2 d-1)}
+\item{Reco_full}{Total ecosystem respiration
+(g C CO2 m^-2 day^-1)}
+\item{NEE_mod}{Net ecosystem exchange of CO2
+(g C CO2 m^-2 day^-1)}
+\item{S1}{Labile soil carbon pool
+(g C m^-3, top meter of soil)}
+\item{S2}{Soil organic carbon pool
+(g C m^-3, top meter of soil)}
+\item{pulse_emission_total}{total methane emitted
+(g C CH4 m^-2 day^-1)}
+\item{Plant_flux_net}{net methane flux via plant-mediated transport
+(g C CH4 m^-2 day^-1)}
+\item{Hydro_flux}{net diffusive methane flux from water to atmosphere
+(g C CH4 m^-2 day^-1)}
+\item{M1}{methane pool produced from labile soil carbon
+(g C CH4 m^-3, top meter of soil and water)}
+\item{M2}{methane pool produced from soil organic carbon
+(g C CH4 m^-3, top meter of soil and water)}
+\item{trans2}{fraction of methane released via plant-mediated transport
+(unitless)}
+}
 }
 \description{
-run_PEPRMT
+Wrapper function to run all steps of the PEPRMT model (v1.0).
+}
+\details{
+Runs all PEPRMT functions and returns an output dataframe with modeled GPP, Reco, and CH4
+
+The PEPRMT model was originally parameterized for restored freshwater
+wetlands in the Sacramento–San Joaquin River Delta, California, USA
+(Oikawa et al. 2017) and later updated for tidal wetlands with inhibition
+of methane production in response to salinity and nitrate
+(Oikawa et al. 2024).
+
+Modules are run sequentially:
+PEPRMT_GPP, then PEPRMT_Reco, then PEPRMT_CH4.
+
+All variables are expected at a daily time step.
+
+All PEPRMT modules use the same input structure, although not all variables
+are used in every module.
+
+\strong{Expected data column order:}
+\enumerate{
+\item Continuous day of year
+\item Discontinuous day of year
+\item Year
+\item Air temperature (°C)
+\item Water table depth (cm)
+\item PAR (µmol m^-2 d^-1)
+\item Leaf Area Index
+\item Greenness Index
+\item FPAR flag
+\item Light Use Efficiency
+\item Wetland age (years)
+\item Salinity (ppt)
+\item NO3 (mg L^-1)
+\item Soil organic matter (g C m^-3)
+\item Site identifier
+}
 }
