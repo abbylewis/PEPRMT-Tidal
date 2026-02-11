@@ -14,7 +14,9 @@ run_PEPRMT <- function(target) {
   #Create a new dataset that included model results
   target_results <- target |>
     dplyr::left_join(GPP_mod_target |>
-                dplyr::rename(GPP_mod = GPP, DOY = Time_2),
+                dplyr::rename(GPP_mod = GPP, 
+                              DOY = Time_2,
+                              site = site_2),
               by = c("DOY", "site"))
   
   #Second run Reco Module
@@ -22,13 +24,16 @@ run_PEPRMT <- function(target) {
   target$GPP_mod <- target_results$GPP_mod
   
   Reco_theta <- c(18.41329, 1487.65701, 11.65972, 61.29611)
-  Reco_mod_target <- PEPRMT_Reco(Reco_theta, data = target, wetland_type =
-                                         2)
+  Reco_mod_target <- PEPRMT_Reco(Reco_theta, 
+                                 data = target, 
+                                 wetland_type = 2)
   
   #Create a new dataset that included model results
   target_results <- target_results |>
     dplyr::left_join(Reco_mod_target |>
-                dplyr::rename(DOY = Time_2, Reco_mod = Reco_full),
+                dplyr::rename(DOY = Time_2, 
+                              Reco_mod = Reco_full,
+                              site = site_2),
               by = c("DOY", "site"))
   
   #Last, run CH4 module
@@ -63,7 +68,10 @@ run_PEPRMT <- function(target) {
   target_results <- target_results |>
     dplyr::left_join(
       CH4_mod_target |>
-        dplyr::rename(DOY = Time_2, CH4_mod = pulse_emission_total),
+        dplyr::rename(DOY = Time_2, 
+                      CH4_mod = pulse_emission_total,
+                      DOY = Time_2,
+                      site = site_2),
       by = c("DOY", "site")
     )
   

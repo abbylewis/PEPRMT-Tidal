@@ -141,27 +141,26 @@ PEPRMT_CH4 <- function(theta,
     #  subset your data here, then create the exogenous variables here
     d <- subset(data, site == i)
 
-    # Exogenous Variables
-    Time_2 <- d[, 1] # day of year (1-infinite # of days)
-    DOY_disc_2 <- d[, 2] # discontinuous day of year that starts over every year (1-365 or 366)
-    Year_2 <- d[, 3] # year
-    TA_2 <- d[, 4] # Air temperature (C)
-    WT_2 <- d[, 5] # water table depth (cm) equals 0 when water table at soil surface
-    PAR_2 <- d[, 6] # photosynthetically active radiation (umol m-2 d-1)
-    LAI_2 <- d[, 7] # Leaf area index (if not using can be 0s or NaN)
-    GI_2 <- d[, 8] # greeness index from Phenocam (GCC) or Landsat EVI etc (unitless)
-    FPAR <- d[, 9] # If using LAI data, set FPAR variable to 1's, if using a greenness index set FPAR to 0's
-    LUE <- d[, 10] # growing season LUE computed for each site using measured GPP in gC per umol
-    wetland_age_2 <- d[, 11] # Age of wetland in years
-    Sal <- d[, 12] # Salinity (ppt)
-    NO3 <- d[, 13] # Dissolved NO3 (mg/L)
+    Time_2 <- d$DOY # day of year (1-infinite # of days)
+    DOY_disc_2 <- d$DOY_disc # discontinuous day of year that starts over every year (1-365 or 366)
+    Year_2 <- d$Year # year
+    TA_2 <- d$TA_C # Air temperature (C)
+    WT_2 <- d$WTD_cm # water table depth (cm) equals 0 when water table at soil surface
+    PAR_2 <- d$PAR_umol_m2_day # photosynthetically active radiation (umol m-2 d-1)
+    LAI_2 <- d$LAI # Leaf area index (if not using can be 0s or NaN)
+    GI_2 <- d$EVI # greeness index from Phenocam (GCC) or Landsat EVI etc (unitless)
+    FPAR <- d$FPAR # If using LAI data, set FPAR variable to 1's, if using a greenness index set FPAR to 0's
+    LUE <- d$LUE # growing season LUE computed for each site using measured GPP in gC per umol
+    wetland_age_2 <- d$Wetland_age_years # Age of wetland in years
+    Sal <- d$Salinity_daily_ave_ppt # Salinity (ppt)
+    NO3 <- d$NO3_mg_L # Dissolved NO3 (mg/L)
     # Season_drop_2 <- d[,13] #not used in PEPRMT-Tidal (was used in original PEPRMT model in peatlands)
     # Season variable that is set to 1 in winter (DOY 1-88, 336-365), 2 pre-spring (DOY 89-175), 3 spring (DOY 176-205), 4 summer (DOY 206-265), 5 fall (DOY 266-335)
-    SOM_2 <- d[, 14] # Decomposed Organic matter : all the decomposed soil organic matter in top meter of soil informed buy MEM inclusive of current year
-    site_2 <- d[, 15] # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
-    GPP_2 <- d[, 16] # Modeled GPP - use output from PEPRMT-GPP (gC m-2 day-1) where negative fluxes = uptake
-    S1_2 <- d[, 17] # Modeled SOC pool - use output from PEPRMT Reco model -cumulative grams C m-3
-    S2_2 <- d[, 18] # Modeled labile C pool - use output from PEPRMT Reco model -cumulative grams C m-3
+    SOM_2 <- d$SOM_MEM_gC_m3 # Decomposed Organic matter : all the decomposed soil organic matter in top meter of soil informed buy MEM inclusive of current year
+    site_2 <- d$site # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
+    GPP_2 <- d$GPP_mod # Modeled GPP - use output from PEPRMT-GPP (gC m-2 day-1) where negative fluxes = uptake
+    S1_2 <- d$SOM_total # Modeled SOC pool - use output from PEPRMT Reco model -cumulative grams C m-3
+    S2_2 <- d$SOM_labile # Modeled labile C pool - use output from PEPRMT Reco model -cumulative grams C m-3
 
     WT_2_adj <- (WT_2 / 100) + 1
     GPPmax <- max(GPP_2 * -1)
@@ -397,7 +396,9 @@ PEPRMT_CH4 <- function(theta,
       Hydro_flux,
       M1,
       M2,
-      trans2
+      trans2,
+      Time_2,
+      site_2
     )))
 
     # store d in a vector
