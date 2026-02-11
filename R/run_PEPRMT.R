@@ -81,7 +81,7 @@
 #' @export
 #'
 run_PEPRMT <- function(data,
-                       wetland_type,
+                       wetland_type = 2,
                        GPP_theta = c(
                          0.7479271,
                          1.0497113,
