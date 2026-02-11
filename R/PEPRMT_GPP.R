@@ -21,10 +21,10 @@
 #' PEPRMT_GPP, then PEPRMT_Reco, then PEPRMT_CH4.
 #'
 #' All variables are expected at a daily time step.
-#' 
-#' This model predicts GPP using a light use efficiency equation GPP can be 
-#' predicted using leaf area index (LAI) or a greenness index from Phenocam data 
-#' or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al. 
+#'
+#' This model predicts GPP using a light use efficiency equation GPP can be
+#' predicted using leaf area index (LAI) or a greenness index from Phenocam data
+#' or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al.
 #' 2023 uses EVI from Landsat
 #'
 #' **Expected data column order:**
@@ -53,20 +53,20 @@
 #' }
 #'
 #' @references
-#' Oikawa, P. Y., Jenerette, G. D., Knox, S. H., Sturtevant, C., Verfaillie, 
-#' J., Dronova, I., Poindexter, C. M., Eichelmann, E., & Baldocchi, D. D. 
-#' (2017). Evaluation of a hierarchy of models reveals importance of substrate 
-#' limitation for predicting carbon dioxide and methane exchange in restored 
-#' wetlands. Journal of Geophysical Research: Biogeosciences, 122(1), 145–167. 
+#' Oikawa, P. Y., Jenerette, G. D., Knox, S. H., Sturtevant, C., Verfaillie,
+#' J., Dronova, I., Poindexter, C. M., Eichelmann, E., & Baldocchi, D. D.
+#' (2017). Evaluation of a hierarchy of models reveals importance of substrate
+#' limitation for predicting carbon dioxide and methane exchange in restored
+#' wetlands. Journal of Geophysical Research: Biogeosciences, 122(1), 145–167.
 #' https://doi.org/10.1002/2016JG003438
 #'
-#' Oikawa, P. Y., Sihi, D., Forbrich, I., Fluet-Chouinard, E., Najarro, M., 
-#' Thomas, O., Shahan, J., Arias-Ortiz, A., Russell, S., Knox, S. H., McNicol, 
-#' G., Wolfe, J., Windham-Myers, L., Stuart-Haentjens, E., Bridgham, S. D., 
-#' Needelman, B., Vargas, R., Schäfer, K., Ward, E. J., Megonigal, P., & 
-#' Holmquist, J. (2024). A New Coupled Biogeochemical Modeling Approach Provides 
-#' Accurate Predictions of Methane and Carbon Dioxide Fluxes Across Diverse 
-#' Tidal Wetlands. Journal of Geophysical Research: Biogeosciences, 129(10), 
+#' Oikawa, P. Y., Sihi, D., Forbrich, I., Fluet-Chouinard, E., Najarro, M.,
+#' Thomas, O., Shahan, J., Arias-Ortiz, A., Russell, S., Knox, S. H., McNicol,
+#' G., Wolfe, J., Windham-Myers, L., Stuart-Haentjens, E., Bridgham, S. D.,
+#' Needelman, B., Vargas, R., Schäfer, K., Ward, E. J., Megonigal, P., &
+#' Holmquist, J. (2024). A New Coupled Biogeochemical Modeling Approach Provides
+#' Accurate Predictions of Methane and Carbon Dioxide Fluxes Across Diverse
+#' Tidal Wetlands. Journal of Geophysical Research: Biogeosciences, 129(10),
 #' e2023JG007943. https://doi.org/10.1029/2023JG007943
 #'
 #' @export
@@ -76,7 +76,7 @@
 #' # data(example_dataset)
 #' # theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
-PEPRMT_GPP <- function(theta, 
+PEPRMT_GPP <- function(theta,
                        data) {
   #---CREATE A SPACE TO COLLECT ITERATIVE RESULTS---#
   q <- unique(as.integer(data$site))
@@ -160,4 +160,3 @@ PEPRMT_GPP <- function(theta,
 
   return(GPP_output)
 }
-

@@ -1,13 +1,24 @@
 #' run_PEPRMT
-#' 
+#'
 #' Runs all PEPRMT functions and returns an output dataframe with modeled GPP, Reco, and CH4
 #'
 #' @param data Data frame containing 15 required columns used as model inputs.
 #'   See **Details** for expected column structure.
-#'   
+#' @param wetland_type Integer indicating wetland class:
+#'   1 = Freshwater peatland, 2 = Tidal wetland.
+#' @param GPP_theta Numeric vector of length 4 containing calibrated GPP parameter
+#'   values. Default values were determined via MCMC Bayesian fitting
+#'   (Oikawa et al. 2023).
+#' @param Reco_theta Numeric vector of length 4 containing calibrated Reco parameter
+#'   values. Default values were determined via MCMC Bayesian fitting
+#'   (Oikawa et al. 2023).
+#' @param CH4_theta Numeric vector of length 8 containing calibrated CH4 parameter
+#'   values. Default values were determined via MCMC Bayesian fitting
+#'   (Oikawa et al. 2023).
+#'
 #' @description
 #' Wrapper function to run all steps of the PEPRMT model (v1.0).
-#' 
+#'
 #' @details
 #' The PEPRMT model was originally parameterized for restored freshwater
 #' wetlands in the Sacramento–San Joaquin River Delta, California, USA
@@ -69,75 +80,152 @@
 #' }
 #' @export
 #'
-run_PEPRMT <- function(data) {
+run_PEPRMT <- function(data,
+                       wetland_type,
+                       GPP_theta = c(
+                         0.7479271,
+                         1.0497113,
+                         149.4681710,
+                         94.4532674
+                       ),
+                       Reco_theta = c(
+                         18.41329,
+                         1487.65701,
+                         11.65972,
+                         61.29611
+                       ),
+                       CH4_theta = c(
+                         # Ea_CH4_SOC kJ mol-1
+                         14.9025078 + 67.1,
+                         # kM_CH4_SOC
+                         0.4644174 + 17,
+                         # Ea_CH4_labile kJ mol-1- used to be 16.7845002 + 71.1
+                         86.7,
+                         # kM_Ch4labile
+                         0.4359649 + 23,
+                         # Ea_CH4_oxi
+                         15.8857612 + 75.4,
+                         # kM_CH4oxi
+                         0.5120464 + 23,
+                         # 486.4106939, #kI_SO4
+                         100,
+                         # 0.1020278) #kI_NO3
+                         0.2
+                       )) {
+  # -------------------------
+  # Check data structure
+  # -------------------------
+
   data <- data.frame(data)
-  #First run GPP Module
-  GPP_theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
-  GPP_mod_data <- PEPRMT_GPP(theta = GPP_theta, data = data)
-  
-  #Create a new dataset that included model results
-  data_results <- data |>
-    dplyr::left_join(GPP_mod_data |>
-                dplyr::rename(GPP_mod = GPP, 
-                              DOY = Time_2,
-                              site = site_2),
-              by = c("DOY", "site"))
-  
-  #Second run Reco Module
-  #Add modeled GPP into data before running Reco module (16th column)
-  data$GPP_mod <- data_results$GPP_mod
-  
-  Reco_theta <- c(18.41329, 1487.65701, 11.65972, 61.29611)
-  Reco_mod_data <- PEPRMT_Reco(Reco_theta, 
-                                 data = data, 
-                                 wetland_type = 2)
-  
-  #Create a new dataset that included model results
-  data_results <- data_results |>
-    dplyr::left_join(Reco_mod_data |>
-                dplyr::rename(DOY = Time_2, 
-                              Reco_mod = Reco_full,
-                              site = site_2),
-              by = c("DOY", "site"))
-  
-  #Last, run CH4 module
-  #Add modeled S1, S2 into data before running CH4 module (17th & 18th columns)
-  data$SOM_total <- data_results$S1
-  data$SOM_labile <- data_results$S2
-  
-  CH4_theta <- c(
-    #Ea_CH4_SOC kJ mol-1
-    14.9025078 + 67.1,
-    #kM_CH4_SOC
-    0.4644174 + 17,
-    #Ea_CH4_labile kJ mol-1- used to be 16.7845002 + 71.1
-    86.7,
-    #kM_Ch4labile
-    0.4359649 + 23,
-    #Ea_CH4_oxi
-    15.8857612 + 75.4,
-    #kM_CH4oxi
-    0.5120464 + 23,
-    #486.4106939, #kI_SO4
-    100,
-    #0.1020278) #kI_NO3
-    0.2
+  expected_colnames <- c(
+    "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "Salinity_daily_ave_ppt", "NO3_mg_L",
+    "SOM_MEM_gC_m3", "site"
   )
-  
-  CH4_mod_data <- PEPRMT_CH4(theta = CH4_theta,
-                                     data = data,
-                                     wetland_type = 2)
-  
-  #Create a new dataset that includes model results
-  data_results <- data_results |>
+
+  if (!all(expected_colnames %in% colnames(data))) {
+    stop(paste0(
+      "Missing required inputs.\nThe following columns were not found in data:\n",
+      paste(expected_colnames[!expected_colnames %in% colnames(data)],
+        collapse = ", "
+      )
+    ))
+  }
+
+  # -------------------------
+  # Check parameters
+  # -------------------------
+
+  if (!is.numeric(GPP_theta) || length(GPP_theta) != 4) {
+    stop("GPP_theta must be a numeric vector of length 4.", call. = FALSE)
+  }
+
+  if (!is.numeric(Reco_theta) || length(Reco_theta) != 4) {
+    stop("Reco_theta must be a numeric vector of length 4.", call. = FALSE)
+  }
+
+  if (!is.numeric(CH4_theta) || length(CH4_theta) != 8) {
+    stop("CH4_theta must be a numeric vector of length 8.", call. = FALSE)
+  }
+
+  # -------------------------
+  # Check wetland_type
+  # -------------------------
+
+  if (!is.numeric(wetland_type) || length(wetland_type) != 1 ||
+    !wetland_type %in% c(1, 2)) {
+    stop("wetland_type must be a single numeric value: 1 (Freshwater peatland) or 2 (Tidal wetland).",
+      call. = FALSE
+    )
+  }
+
+  # -------------------------
+  # Run PEPRMT functions
+  # -------------------------
+
+  # GPP
+
+  GPP_mod_data <- PEPRMT_GPP(theta = GPP_theta, data = data)
+
+  # Create a new dataset that includes model results
+  results <- data |>
     dplyr::left_join(
-      CH4_mod_data |>
-        dplyr::rename(DOY = Time_2, 
-                      CH4_mod = pulse_emission_total,
-                      DOY = Time_2,
-                      site = site_2),
+      GPP_mod_data |>
+        dplyr::rename(
+          GPP_mod = GPP,
+          DOY = Time_2,
+          site = site_2
+        ),
       by = c("DOY", "site")
     )
-  
-  return(data_results)
+
+  # Reco
+
+  # Add modeled GPP into data before running Reco module (16th column)
+  data$GPP_mod <- results$GPP_mod
+
+  Reco_mod_data <- PEPRMT_Reco(Reco_theta,
+    data = data,
+    wetland_type = wetland_type
+  )
+
+  # Add model results
+  results <- results |>
+    dplyr::left_join(
+      Reco_mod_data |>
+        dplyr::rename(
+          DOY = Time_2,
+          Reco_mod = Reco_full,
+          site = site_2
+        ),
+      by = c("DOY", "site")
+    )
+
+  # CH4
+
+  # Add modeled S1, S2 into data before running CH4 module (17th & 18th columns)
+  data$SOM_total <- results$S1
+  data$SOM_labile <- results$S2
+
+  CH4_mod_data <- PEPRMT_CH4(
+    theta = CH4_theta,
+    data = data,
+    wetland_type = wetland_type
+  )
+
+  # Add model results
+  results <- results |>
+    dplyr::left_join(
+      CH4_mod_data |>
+        dplyr::rename(
+          DOY = Time_2,
+          CH4_mod = pulse_emission_total,
+          DOY = Time_2,
+          site = site_2
+        ),
+      by = c("DOY", "site")
+    )
+
+  return(results)
 }

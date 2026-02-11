@@ -47,7 +47,8 @@ str(example_data)
 # First run GPP Module
 
 GPP_theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
-GPP_mod <- PEPRMT_GPP(theta = GPP_theta,
+GPP_mod <- PEPRMT_GPP(
+  theta = GPP_theta,
   data = example_data
 )
 

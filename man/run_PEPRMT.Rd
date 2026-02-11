@@ -4,11 +4,33 @@
 \alias{run_PEPRMT}
 \title{run_PEPRMT}
 \usage{
-run_PEPRMT(data)
+run_PEPRMT(
+  data,
+  wetland_type,
+  GPP_theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674),
+  Reco_theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
+  CH4_theta = c(14.9025078 + 67.1, 0.4644174 + 17, 86.7, 0.4359649 + 23, 15.8857612 +
+    75.4, 0.5120464 + 23, 100, 0.2)
+)
 }
 \arguments{
 \item{data}{Data frame containing 15 required columns used as model inputs.
 See \strong{Details} for expected column structure.}
+
+\item{wetland_type}{Integer indicating wetland class:
+1 = Freshwater peatland, 2 = Tidal wetland.}
+
+\item{GPP_theta}{Numeric vector of length 4 containing calibrated GPP parameter
+values. Default values were determined via MCMC Bayesian fitting
+(Oikawa et al. 2023).}
+
+\item{Reco_theta}{Numeric vector of length 4 containing calibrated Reco parameter
+values. Default values were determined via MCMC Bayesian fitting
+(Oikawa et al. 2023).}
+
+\item{CH4_theta}{Numeric vector of length 8 containing calibrated CH4 parameter
+values. Default values were determined via MCMC Bayesian fitting
+(Oikawa et al. 2023).}
 }
 \value{
 Updated dataframe containing:
