@@ -108,16 +108,16 @@ PEPRMT_GPP <- function(theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674),
   }
 
   #---CREATE A SPACE TO COLLECT ITERATIVE RESULTS---#
-  q <- unique(as.integer(data$site))
+  q <- unique(data$site)
   outcome_lst <- vector("list", length(q))
 
   #---ITERATIVE LOOP TO RUN THE MODEL ACROSS DIFFERENT SITES---#
   for (i in 1:length(q)) {
     #  subset your data here, then create the exogenous variables here
-    d <- subset(data, site == i)
+    d <- subset(data, site == q[[i]])
 
     # Exogenous Variables
-    Time_2 <- d$DOY # day of year (1-infinite # of days)
+    DOY <- d$DOY # day of year (1-infinite # of days)
     DOY_disc_2 <- d$DOY_disc # discontinuous day of year that starts over every year (1-365 or 366)
     Year_2 <- d$Year # year
     TA_2 <- d$TA_C # Air temperature (C)
@@ -133,7 +133,7 @@ PEPRMT_GPP <- function(theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674),
     # Season_drop_2 <- d[,13] #not used in PEPRMT-Tidal (was used in original PEPRMT model in peatlands)
     # Season variable that is set to 1 in winter (DOY 1-88, 336-365), 2 pre-spring (DOY 89-175), 3 spring (DOY 176-205), 4 summer (DOY 206-265), 5 fall (DOY 266-335)
     SOM_2 <- d$SOM_MEM_gC_m3 # Decomposed Organic matter : all the decomposed soil organic matter in top meter of soil informed buy MEM inclusive of current year
-    site_2 <- d$site # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
+    site <- d$site # Unique site ID
 
 
     ########## COMPUTE GPP################################
@@ -162,10 +162,10 @@ PEPRMT_GPP <- function(theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674),
     AirT_K <- TA_2 + 274.15 # C to Kelvin
 
 
-    vct <- vector("numeric", length(Time_2))
-    NPP_FPAR_T <- vector("numeric", length(Time_2))
+    vct <- vector("numeric", length(DOY))
+    NPP_FPAR_T <- vector("numeric", length(DOY))
 
-    for (t in 1:length(Time_2)) {
+    for (t in 1:length(DOY)) {
       exponent1 <- (Ha * (AirT_K[t] - T_opt)) / (AirT_K[t] * R_t * T_opt)
       exponent2 <- (Hd * (AirT_K[t] - T_opt)) / (AirT_K[t] * R_t * T_opt)
       top <- Hd * exp(exponent1)
@@ -175,10 +175,9 @@ PEPRMT_GPP <- function(theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674),
       NPP_FPAR_T[t] <- ((vct[t] * (APAR_2[t] * LUE[t]))) # umol m-2 d-1* gC/umol == g C m-2 d-1
     }
 
-    GPP <- (NPP_FPAR_T) * -1 # stay as g C m-2 d-1 where negative values= uptake
+    GPP_mod <- (NPP_FPAR_T) * -1 # stay as g C m-2 d-1 where negative values= uptake
 
-    w <- cbind(GPP, APAR_2, Time_2, site_2) |>
-      as.data.frame()
+    w <- data.frame(GPP_mod, APAR_2, DOY, site)
     # store d in a vector
     outcome_lst[[i]] <- (w)
   }

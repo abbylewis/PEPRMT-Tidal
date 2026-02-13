@@ -44,7 +44,7 @@
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
-#'   \item{Reco_full}{Total ecosystem respiration
+#'   \item{Reco_mod}{Total ecosystem respiration
 #'     (g C CO2 m^-2 day^-1)}
 #'   \item{NEE_mod}{Net ecosystem exchange of CO2
 #'     (g C CO2 m^-2 day^-1)}
@@ -142,16 +142,16 @@ PEPRMT_Reco <- function(theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
 
 
   #---CREATE A SPACE TO COLLECT ITERATIVE RESULTS---#
-  q <- unique(as.integer(data$site))
+  q <- unique(data$site)
   outcome_lst <- vector("list", length(q))
 
   #---ITERATIVE LOOP TO RUN THE MODEL ACROSS DIFFERENT SITES---#
   for (i in 1:length(q)) {
     #  subset your data here, then create the exogenous variables here
-    d <- subset(data, site == i)
+    d <- subset(data, site == q[[i]])
 
     # Exogenous Variables
-    Time_2 <- d$DOY # day of year (1-infinite # of days)
+    DOY <- d$DOY # day of year (1-infinite # of days)
     DOY_disc_2 <- d$DOY_disc # discontinuous day of year that starts over every year (1-365 or 366)
     Year_2 <- d$Year # year
     TA_2 <- d$TA_C # Air temperature (C)
@@ -167,7 +167,7 @@ PEPRMT_Reco <- function(theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
     # Season_drop_2 <- d[,13] #not used in PEPRMT-Tidal (was used in original PEPRMT model in peatlands)
     # Season variable that is set to 1 in winter (DOY 1-88, 336-365), 2 pre-spring (DOY 89-175), 3 spring (DOY 176-205), 4 summer (DOY 206-265), 5 fall (DOY 266-335)
     SOM_2 <- d$SOM_MEM_gC_m3 # Decomposed Organic matter : all the decomposed soil organic matter in top meter of soil informed buy MEM inclusive of current year
-    site_2 <- d$site # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
+    site <- d$site # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
     GPP_2 <- d$GPP_mod # Modeled GPP - use output from PEPRMT-GPP (gC m-2 day-1) where negative fluxes = uptake
 
 
@@ -182,22 +182,22 @@ PEPRMT_Reco <- function(theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
 
 
     # preallocating space
-    S1sol <- vector("numeric", length(Time_2))
-    S2sol <- vector("numeric", length(Time_2))
-    R1 <- vector("numeric", length(Time_2))
-    R2 <- vector("numeric", length(Time_2))
-    S1 <- vector("numeric", length(Time_2))
-    S2 <- vector("numeric", length(Time_2))
-    percent_reduction <- vector("numeric", length(Time_2))
-    percent_enhancement <- vector("numeric", length(Time_2))
-    Reco_1 <- vector("numeric", length(Time_2))
-    Reco_full <- vector("numeric", length(Time_2))
-    Ps <- vector("numeric", length(Time_2))
-    C2in <- vector("numeric", length(Time_2))
-    C1_init <- vector("numeric", length(Time_2))
-    percent_available <- vector("numeric", length(Time_2))
+    S1sol <- vector("numeric", length(DOY))
+    S2sol <- vector("numeric", length(DOY))
+    R1 <- vector("numeric", length(DOY))
+    R2 <- vector("numeric", length(DOY))
+    S1 <- vector("numeric", length(DOY))
+    S2 <- vector("numeric", length(DOY))
+    percent_reduction <- vector("numeric", length(DOY))
+    percent_enhancement <- vector("numeric", length(DOY))
+    Reco_1 <- vector("numeric", length(DOY))
+    Reco_mod <- vector("numeric", length(DOY))
+    Ps <- vector("numeric", length(DOY))
+    C2in <- vector("numeric", length(DOY))
+    C1_init <- vector("numeric", length(DOY))
+    percent_available <- vector("numeric", length(DOY))
 
-    for (t in 1:length(Time_2)) {
+    for (t in 1:length(DOY)) {
       # C allocation
       # only 50% of GPP is available
       C2in[t] <- NPPsum_avail_2[t] * 0.5 # gC m-2 d-1
@@ -303,13 +303,12 @@ PEPRMT_Reco <- function(theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
       ########################################
 
       Reco_1[t] <- R1[t] + R2[t]
-      Reco_full[t] <- (R1[t]) + (R2[t]) # umol m2 d-1
+      Reco_mod[t] <- (R1[t]) + (R2[t]) # umol m2 d-1
     }
 
     NEE_mod <- GPP_2 + Reco_1 # umol m-2 d-1
 
-    w <- cbind(Reco_full, NEE_mod, S1, S2, Time_2, site_2) |>
-      as.data.frame()
+    w <- data.frame(Reco_mod, NEE_mod, S1, S2, DOY, site)
     # store d in a vector
     outcome_lst[[i]] <- (w)
   }

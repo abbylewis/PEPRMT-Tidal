@@ -51,7 +51,7 @@
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
-#'   \item{pulse_emission_total}{total methane emitted
+#'   \item{CH4_mod}{total methane emitted
 #'     (g C CH4 m^-2 day^-1)}
 #'   \item{Plant_flux_net}{net methane flux via plant-mediated transport
 #'     (g C CH4 m^-2 day^-1)}
@@ -177,15 +177,15 @@ PEPRMT_CH4 <- function(theta = c(
   zeta3 <- 0.11
 
   #---CREATE A SPACE TO COLLECT ITERATIVE RESULTS---#
-  q <- unique(as.integer(data$site))
+  q <- unique(data$site)
   outcome_lst <- vector("list", length(q))
 
   #---ITERATIVE LOOP TO RUN THE MODEL ACROSS DIFFERENT SITES---#
   for (i in 1:length(q)) {
     #  subset your data here, then create the exogenous variables here
-    d <- subset(data, site == i)
+    d <- subset(data, site == q[[i]])
 
-    Time_2 <- d$DOY # day of year (1-infinite # of days)
+    DOY <- d$DOY # day of year (1-infinite # of days)
     DOY_disc_2 <- d$DOY_disc # discontinuous day of year that starts over every year (1-365 or 366)
     Year_2 <- d$Year # year
     TA_2 <- d$TA_C # Air temperature (C)
@@ -201,7 +201,7 @@ PEPRMT_CH4 <- function(theta = c(
     # Season_drop_2 <- d[,13] #not used in PEPRMT-Tidal (was used in original PEPRMT model in peatlands)
     # Season variable that is set to 1 in winter (DOY 1-88, 336-365), 2 pre-spring (DOY 89-175), 3 spring (DOY 176-205), 4 summer (DOY 206-265), 5 fall (DOY 266-335)
     SOM_2 <- d$SOM_MEM_gC_m3 # Decomposed Organic matter : all the decomposed soil organic matter in top meter of soil informed buy MEM inclusive of current year
-    site_2 <- d$site # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
+    site <- d$site # Site: if running more than 1 site, have 1s in this column for first site, 2s for 2nd site and so on
     GPP_2 <- d$GPP_mod # Modeled GPP - use output from PEPRMT-GPP (gC m-2 day-1) where negative fluxes = uptake
     S1_2 <- d$SOM_total # Modeled SOC pool - use output from PEPRMT Reco model -cumulative grams C m-3
     S2_2 <- d$SOM_labile # Modeled labile C pool - use output from PEPRMT Reco model -cumulative grams C m-3
@@ -216,35 +216,35 @@ PEPRMT_CH4 <- function(theta = c(
     M_Vmax3 <- M_alpha3 * exp(-M_ea3 / RT) # gC m-2 d-1
 
     # preallocating space
-    S1sol <- vector("numeric", length(Time_2))
-    S2sol <- vector("numeric", length(Time_2))
+    S1sol <- vector("numeric", length(DOY))
+    S2sol <- vector("numeric", length(DOY))
 
-    M1 <- vector("numeric", length(Time_2))
-    M2 <- vector("numeric", length(Time_2))
-    M1_full <- vector("numeric", length(Time_2))
-    M2_full <- vector("numeric", length(Time_2))
-    M_full <- vector("numeric", length(Time_2))
-    M_percent_reduction <- vector("numeric", length(Time_2))
-    M_percent_reduction_2 <- vector("numeric", length(Time_2))
+    M1 <- vector("numeric", length(DOY))
+    M2 <- vector("numeric", length(DOY))
+    M1_full <- vector("numeric", length(DOY))
+    M2_full <- vector("numeric", length(DOY))
+    M_full <- vector("numeric", length(DOY))
+    M_percent_reduction <- vector("numeric", length(DOY))
+    M_percent_reduction_2 <- vector("numeric", length(DOY))
 
-    CH4water <- vector("numeric", length(Time_2))
-    Hydro_flux <- vector("numeric", length(Time_2))
-    Plant_flux <- vector("numeric", length(Time_2))
-    Plant_flux_net <- vector("numeric", length(Time_2))
-    CH4water_store <- vector("numeric", length(Time_2))
-    CH4water_0 <- vector("numeric", length(Time_2))
-    Oxi_full <- vector("numeric", length(Time_2))
-    R_Oxi <- vector("numeric", length(Time_2))
-    CH4water_0_2 <- vector("numeric", length(Time_2))
-    # Vtrans=zeros(1,length(Time_2))
-    # Oxi_factor=zeros(1,length(Time_2))
-    trans2 <- vector("numeric", length(Time_2))
-    S1 <- vector("numeric", length(Time_2))
-    S2 <- vector("numeric", length(Time_2))
-    conc_so4AV <- vector("numeric", length(Time_2))
+    CH4water <- vector("numeric", length(DOY))
+    Hydro_flux <- vector("numeric", length(DOY))
+    Plant_flux <- vector("numeric", length(DOY))
+    Plant_flux_net <- vector("numeric", length(DOY))
+    CH4water_store <- vector("numeric", length(DOY))
+    CH4water_0 <- vector("numeric", length(DOY))
+    Oxi_full <- vector("numeric", length(DOY))
+    R_Oxi <- vector("numeric", length(DOY))
+    CH4water_0_2 <- vector("numeric", length(DOY))
+    # Vtrans=zeros(1,length(DOY))
+    # Oxi_factor=zeros(1,length(DOY))
+    trans2 <- vector("numeric", length(DOY))
+    S1 <- vector("numeric", length(DOY))
+    S2 <- vector("numeric", length(DOY))
+    conc_so4AV <- vector("numeric", length(DOY))
 
     #--METHANE TRANSPORT ACROSS DATA---
-    for (t in 1:length(Time_2)) {
+    for (t in 1:length(DOY)) {
       # parameter for plant-mediated transport--function of GPP
       trans2[t] <- ((GPP_2[t] + (GPPmax)) / GPPmax)
       if (trans2[t] < 0) {
@@ -432,18 +432,18 @@ PEPRMT_CH4 <- function(theta = c(
       }
     }
 
-    pulse_emission_total <- Plant_flux_net + Hydro_flux # gC CH4 m-2 day-1 total CH4 flux to atm
+    CH4_mod <- Plant_flux_net + Hydro_flux # gC CH4 m-2 day-1 total CH4 flux to atm
 
-    w <- (data.frame(cbind(
-      pulse_emission_total,
+    w <- data.frame(
+      CH4_mod,
       Plant_flux_net,
       Hydro_flux,
       M1,
       M2,
       trans2,
-      Time_2,
-      site_2
-    )))
+      DOY,
+      site
+    )
 
     # store d in a vector
     outcome_lst[[i]] <- (w)

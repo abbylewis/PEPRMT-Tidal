@@ -24,7 +24,7 @@ peatland, 2 = Tidal wetland.}
 \value{
 Updated dataframe containing:
 \describe{
-\item{Reco_full}{Total ecosystem respiration
+\item{Reco_mod}{Total ecosystem respiration
 (g C CO2 m^-2 day^-1)}
 \item{NEE_mod}{Net ecosystem exchange of CO2
 (g C CO2 m^-2 day^-1)}

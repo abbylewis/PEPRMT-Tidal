@@ -171,12 +171,7 @@ run_PEPRMT <- function(data,
   # Create a new dataset that includes model results
   results <- data |>
     dplyr::left_join(
-      GPP_mod_data |>
-        dplyr::rename(
-          GPP_mod = GPP,
-          DOY = Time_2,
-          site = site_2
-        ),
+      GPP_mod_data,
       by = c("DOY", "site")
     )
 
@@ -194,12 +189,7 @@ run_PEPRMT <- function(data,
   # Add model results
   results <- results |>
     dplyr::left_join(
-      Reco_mod_data |>
-        dplyr::rename(
-          DOY = Time_2,
-          Reco_mod = Reco_full,
-          site = site_2
-        ),
+      Reco_mod_data,
       by = c("DOY", "site")
     )
 
@@ -218,13 +208,7 @@ run_PEPRMT <- function(data,
   # Add model results
   results <- results |>
     dplyr::left_join(
-      CH4_mod_data |>
-        dplyr::rename(
-          DOY = Time_2,
-          CH4_mod = pulse_emission_total,
-          DOY = Time_2,
-          site = site_2
-        ),
+      CH4_mod_data,
       by = c("DOY", "site")
     )
 

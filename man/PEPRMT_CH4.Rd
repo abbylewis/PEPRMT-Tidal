@@ -25,7 +25,7 @@ See \strong{Details} for expected column structure.}
 \value{
 Updated dataframe containing:
 \describe{
-\item{pulse_emission_total}{total methane emitted
+\item{CH4_mod}{total methane emitted
 (g C CH4 m^-2 day^-1)}
 \item{Plant_flux_net}{net methane flux via plant-mediated transport
 (g C CH4 m^-2 day^-1)}

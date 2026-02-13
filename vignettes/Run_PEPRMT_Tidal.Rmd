@@ -34,15 +34,16 @@ str(example_data)
 First, run GPP Module
 
 ```{r gpp}
-# Using default parameter set
+# Run model using default parameters
 GPP_mod <- PEPRMT_GPP(
   data = example_data
 )
 
 # Create a new dataset that includes model results
 example_data_results <- example_data
-example_data_results$GPP_mod <- GPP_mod$GPP
+example_data_results$GPP_mod <- GPP_mod$GPP_mod
 
+# Plot
 example_data_results |>
   ggplot(aes(DOY)) +
   geom_line(aes(x = DOY, y = GPP_mod, color = "Modeled")) +
@@ -60,22 +61,22 @@ example_data_results |>
     panel.border = element_rect(colour = "black"),
     panel.background = element_blank()
   ) +
-  facet_wrap(~site_char, ncol = 1, scales = "free")
+  facet_wrap(~site, ncol = 1, scales = "free")
 ```
 
 Second, run Reco Module
 
 ```{r reco}
-# Using default parameters
+# Run model using default parameters
 Reco_mod <- PEPRMT_Reco(
   data = example_data_results,
   wetland_type = 2
 )
 
 # Create a new dataset that includes model results
-example_data_results$Reco_mod <- Reco_mod$Reco_full
+example_data_results$Reco_mod <- Reco_mod$Reco_mod
 
-# make plots for each site
+# Plot
 example_data_results |>
   ggplot(aes(DOY)) +
   geom_line(aes(x = DOY, y = Reco_mod, color = "Modeled")) +
@@ -93,7 +94,7 @@ example_data_results |>
     panel.border = element_rect(colour = "black"),
     panel.background = element_blank()
   ) +
-  facet_wrap(~site_char, ncol = 1, scales = "free")
+  facet_wrap(~site, ncol = 1, scales = "free")
 ```
 
 Finally, run CH4 module
@@ -103,16 +104,16 @@ Finally, run CH4 module
 example_data_results$SOM_total <- Reco_mod$S1
 example_data_results$SOM_labile <- Reco_mod$S2
 
-# Using default parameters
+# Run model using default parameters
 CH4_mod <- PEPRMT_CH4(
   data = example_data_results,
   wetland_type = 2
 )
 
 # Create a new dataset that includes model results
-example_data_results$CH4_mod <- CH4_mod$pulse_emission_total
+example_data_results$CH4_mod <- CH4_mod$CH4_mod
 
-# make plots for each site
+# Plot
 example_data_results |>
   ggplot(aes(DOY)) +
   geom_line(aes(x = DOY, y = CH4_mod * 1000, color = "Modeled")) +
@@ -131,12 +132,13 @@ example_data_results |>
     panel.background = element_blank(),
     legend.position = "center"
   ) +
-  facet_wrap(~site_char, ncol = 1, scales = "free")
+  facet_wrap(~site, ncol = 1, scales = "free")
 ```
 
 Alternatively, all modules can be run in combination using run_PEPRMT().
 
 ```{r}
+# Run model using default parameters
 run_PEPRMT(example_data,
   wetland_type = 2
 )
