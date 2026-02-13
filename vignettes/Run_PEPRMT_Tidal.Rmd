@@ -14,244 +14,114 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette uses an example dataset from Oikawa et al. (2023) to run the PEPRMT-Tidal modules
-This dataset includes data from 5 eddy covariance towers located in tidal wetlands across the 3 coasts of the USA.
-For more details about the sites and data sources see Oikawa et al. (2023).
+This vignette uses an example dataset from Oikawa et al. (2023) to run the PEPRMT-Tidal modules. This dataset includes data from 5 eddy covariance towers located in tidal wetlands across the 3 coasts of the USA. For more details about the sites and data sources see Oikawa et al. (2023).
 
 ```{r setup, echo=FALSE, message=FALSE}
 library(PEPRMT)
-library(pacman)
-p_load(
-  R.matlab,
-  here,
-  tidyverse,
-  magrittr,
-  FME,
-  tictoc,
-  beepr,
-  Metrics,
-  gridExtra
-)
+library(ggplot2)
 ```
 
-```{r}
-# All data were sourced from the Ameriflux database or directly from site PIs, details about the data and acquisition are in Oikawa et al. 2023
-# Note: site column needs to be numeric, there is also a char site name column to help keep track
+```{r data_structure}
+# All data were sourced from the Ameriflux database or directly from site PIs,
+# details about the data and acquisition are in Oikawa et al. 2023
+# Note: site column needs to be numeric, there is also a char site name column
+# to help keep track
 
 summary(example_data)
 str(example_data)
 ```
 
+First, run GPP Module
 
-```{r}
-# First run GPP Module
-
-GPP_theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
+```{r gpp}
+# Using default parameter set
 GPP_mod <- PEPRMT_GPP(
-  theta = GPP_theta,
   data = example_data
 )
 
-# Create a new dataset that included model results
+# Create a new dataset that includes model results
 example_data_results <- example_data
 example_data_results$GPP_mod <- GPP_mod$GPP
 
-# make plots for each site
-EDN <- subset(example_data_results, site_char == "US_EDN")
-US_EDN <- ggplot(EDN, aes(DOY)) +
-  geom_line(aes(x = DOY, y = GPP_mod)) +
-  geom_line(aes(x = DOY, y = GPP_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
+example_data_results |>
+  ggplot(aes(DOY)) +
+  geom_line(aes(x = DOY, y = GPP_mod, color = "Modeled")) +
+  geom_line(aes(x = DOY, y = GPP_gC_m2_day, color = "Observed")) +
+  scale_color_manual(
+    breaks = c("Observed", "Modeled"),
+    values = c("black", "red")
+  ) +
   theme_bw(base_size = 12) +
+  ylab(expression("GPP (g C " ~ CO[2] ~ m^-2 ~ day^-1 * ")")) +
   theme(
     axis.line = element_line(colour = "black"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-SRR <- subset(example_data_results, site_char == "US_SRR")
-US_SRR <- ggplot(SRR, aes(DOY)) +
-  geom_line(aes(x = DOY, y = GPP_mod)) +
-  geom_line(aes(x = DOY, y = GPP_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-STJ <- subset(example_data_results, site_char == "US_STJ")
-US_STJ <- ggplot(STJ, aes(DOY)) +
-  geom_line(aes(x = DOY, y = GPP_mod)) +
-  geom_line(aes(x = DOY, y = GPP_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-LA1 <- subset(example_data_results, site_char == "US_LA1")
-US_LA1 <- ggplot(LA1, aes(DOY)) +
-  geom_line(aes(x = DOY, y = GPP_mod)) +
-  geom_line(aes(x = DOY, y = GPP_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-PLM <- subset(example_data_results, site_char == "US_PLM")
-US_PLM <- ggplot(PLM, aes(DOY)) +
-  geom_line(aes(x = DOY, y = GPP_mod)) +
-  geom_line(aes(x = DOY, y = GPP_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-grid.arrange(US_EDN, US_SRR, US_STJ, US_LA1, US_PLM, ncol = 1, nrow = 5)
+    panel.background = element_blank()
+  ) +
+  facet_wrap(~site_char, ncol = 1, scales = "free")
 ```
 
+Second, run Reco Module
 
-
-```{r}
-# Second run Reco Module
-# Add modeled GPP into data before running Reco module (16th column)
-example_data$GPP_mod <- GPP_mod$GPP
-
-Reco_theta <- c(18.41329, 1487.65701, 11.65972, 61.29611)
-Reco_mod <- PEPRMT_Reco(Reco_theta,
-  data = example_data,
+```{r reco}
+# Using default parameters
+Reco_mod <- PEPRMT_Reco(
+  data = example_data_results,
   wetland_type = 2
 )
 
-# Create a new dataset that included model results
+# Create a new dataset that includes model results
 example_data_results$Reco_mod <- Reco_mod$Reco_full
 
 # make plots for each site
-EDN <- subset(example_data_results, site_char == "US_EDN")
-US_EDN_Reco <- ggplot(EDN, aes(DOY)) +
-  geom_line(aes(x = DOY, y = Reco_mod)) +
-  geom_line(aes(x = DOY, y = Reco_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
+example_data_results |>
+  ggplot(aes(DOY)) +
+  geom_line(aes(x = DOY, y = Reco_mod, color = "Modeled")) +
+  geom_line(aes(x = DOY, y = Reco_gC_m2_day, color = "Observed")) +
+  scale_color_manual(
+    breaks = c("Observed", "Modeled"),
+    values = c("black", "red")
+  ) +
   theme_bw(base_size = 12) +
+  ylab(expression("Reco (g C " ~ CO[2] ~ m^-2 ~ day^-1 * ")")) +
   theme(
     axis.line = element_line(colour = "black"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-SRR <- subset(example_data_results, site_char == "US_SRR")
-US_SRR_Reco <- ggplot(SRR, aes(DOY)) +
-  geom_line(aes(x = DOY, y = Reco_mod)) +
-  geom_line(aes(x = DOY, y = Reco_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-STJ <- subset(example_data_results, site_char == "US_STJ")
-US_STJ_Reco <- ggplot(STJ, aes(DOY)) +
-  geom_line(aes(x = DOY, y = Reco_mod)) +
-  geom_line(aes(x = DOY, y = Reco_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-LA1 <- subset(example_data_results, site_char == "US_LA1")
-US_LA1_Reco <- ggplot(LA1, aes(DOY)) +
-  geom_line(aes(x = DOY, y = Reco_mod)) +
-  geom_line(aes(x = DOY, y = Reco_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-PLM <- subset(example_data_results, site_char == "US_PLM")
-US_PLM_Reco <- ggplot(PLM, aes(DOY)) +
-  geom_line(aes(x = DOY, y = Reco_mod)) +
-  geom_line(aes(x = DOY, y = Reco_gC_m2_day), color = "red") +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-grid.arrange(US_EDN_Reco, US_SRR_Reco, US_STJ_Reco, US_LA1_Reco, US_PLM_Reco, ncol = 1, nrow = 5)
+    panel.background = element_blank()
+  ) +
+  facet_wrap(~site_char, ncol = 1, scales = "free")
 ```
 
-```{r}
-# Last, run CH4 module
-# Add modeled S1, S2 into data before running CH4 module (17th & 18th columns)
-example_data$SOM_total <- Reco_mod$S1
-example_data$SOM_labile <- Reco_mod$S2
+Finally, run CH4 module
 
-CH4_theta <- c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 0.5120464, 486.4106939, 0.1020278)
-CH4_mod <- PEPRMT_CH4(CH4_theta,
-  data = example_data,
+```{r ch4}
+# Add modeled S1, S2 into data before running CH4 module (17th & 18th columns)
+example_data_results$SOM_total <- Reco_mod$S1
+example_data_results$SOM_labile <- Reco_mod$S2
+
+# Using default parameters
+CH4_mod <- PEPRMT_CH4(
+  data = example_data_results,
   wetland_type = 2
 )
 
-# Create a new dataset that included model results
+# Create a new dataset that includes model results
 example_data_results$CH4_mod <- CH4_mod$pulse_emission_total
 
 # make plots for each site
-EDN <- subset(example_data_results, site_char == "US_EDN")
-US_EDN_CH4 <- ggplot(EDN, aes(DOY)) +
-  geom_line(aes(x = DOY, y = CH4_mod * 1000)) +
-  geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000), color = "red") +
+example_data_results |>
+  ggplot(aes(DOY)) +
+  geom_line(aes(x = DOY, y = CH4_mod * 1000, color = "Modeled")) +
+  geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000, color = "Observed")) +
+  scale_color_manual(
+    breaks = c("Observed", "Modeled"),
+    values = c("black", "red")
+  ) +
   labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
-  ## To make the plot look prettier
   theme_bw(base_size = 12) +
   theme(
     axis.line = element_line(colour = "black"),
@@ -260,71 +130,15 @@ US_EDN_CH4 <- ggplot(EDN, aes(DOY)) +
     panel.border = element_rect(colour = "black"),
     panel.background = element_blank(),
     legend.position = "center"
-  )
-
-SRR <- subset(example_data_results, site_char == "US_SRR")
-US_SRR_CH4 <- ggplot(SRR, aes(DOY)) +
-  geom_line(aes(x = DOY, y = CH4_mod * 1000)) +
-  geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000), color = "red") +
-  labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-STJ <- subset(example_data_results, site_char == "US_STJ")
-US_STJ_CH4 <- ggplot(STJ, aes(DOY)) +
-  geom_line(aes(x = DOY, y = CH4_mod * 1000)) +
-  geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000), color = "red") +
-  labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-LA1 <- subset(example_data_results, site_char == "US_LA1")
-US_LA1_CH4 <- ggplot(LA1, aes(DOY)) +
-  geom_line(aes(x = DOY, y = CH4_mod * 1000)) +
-  geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000), color = "red") +
-  labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-PLM <- subset(example_data_results, site_char == "US_PLM")
-US_PLM_CH4 <- ggplot(PLM, aes(DOY)) +
-  geom_line(aes(x = DOY, y = CH4_mod * 1000)) +
-  geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000), color = "red") +
-  labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
-  ## To make the plot look prettier
-  theme_bw(base_size = 12) +
-  theme(
-    axis.line = element_line(colour = "black"),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "black"),
-    panel.background = element_blank(),
-    legend.position = "center"
-  )
-
-grid.arrange(US_EDN_CH4, US_SRR_CH4, US_STJ_CH4, US_LA1_CH4, US_PLM_CH4, ncol = 1, nrow = 5)
+  ) +
+  facet_wrap(~site_char, ncol = 1, scales = "free")
 ```
+
+Alternatively, all modules can be run in combination using run_PEPRMT().
+
+```{r}
+run_PEPRMT(example_data,
+  wetland_type = 2
+)
+```
+

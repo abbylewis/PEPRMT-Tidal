@@ -81,7 +81,7 @@
 #' @export
 #'
 run_PEPRMT <- function(data,
-                       wetland_type = 2,
+                       wetland_type,
                        GPP_theta = c(
                          0.7479271,
                          1.0497113,
@@ -185,7 +185,8 @@ run_PEPRMT <- function(data,
   # Add modeled GPP into data before running Reco module (16th column)
   data$GPP_mod <- results$GPP_mod
 
-  Reco_mod_data <- PEPRMT_Reco(Reco_theta,
+  Reco_mod_data <- PEPRMT_Reco(
+    theta = Reco_theta,
     data = data,
     wetland_type = wetland_type
   )

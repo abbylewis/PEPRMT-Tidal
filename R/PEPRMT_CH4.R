@@ -88,11 +88,55 @@
 #' @examples
 #' # Example
 #' # data(example_dataset)
-#' # theta <- c(14.90, 0.46, 16.78, 0.43, 15.88, 0.51, 486.41, 0.10)
+#' # theta <- c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 
+#' # 0.5120464, 486.4106939, 0.1020278)
 #' # out <- PEPRMT_CH4(theta, example_dataset, wetland_type = 2)
-PEPRMT_CH4 <- function(theta,
+PEPRMT_CH4 <- function(theta = c(
+                         14.9025078, 0.4644174, 16.7845002, 0.4359649,
+                         15.8857612, 0.5120464, 486.4106939, 0.1020278
+                       ),
                        data,
                        wetland_type) {
+  # -------------------------
+  # Check data structure
+  # -------------------------
+
+  data <- data.frame(data)
+  expected_colnames <- c(
+    "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "Salinity_daily_ave_ppt", "NO3_mg_L", "SOM_MEM_gC_m3", "site",
+    "GPP_mod", "SOM_total", "SOM_labile"
+  )
+
+  if (!all(expected_colnames %in% colnames(data))) {
+    stop(paste0(
+      "Missing required inputs.\nThe following columns were not found in data:\n",
+      paste(expected_colnames[!expected_colnames %in% colnames(data)],
+        collapse = ", "
+      )
+    ))
+  }
+
+  # -------------------------
+  # Check parameters
+  # -------------------------
+
+  if (!is.numeric(theta) || length(theta) != 8) {
+    stop("CH4_theta must be a numeric vector of length 8.", call. = FALSE)
+  }
+
+  # -------------------------
+  # Check wetland_type
+  # -------------------------
+
+  if (!is.numeric(wetland_type) || length(wetland_type) != 1 ||
+    !wetland_type %in% c(1, 2)) {
+    stop("wetland_type must be a single numeric value: 1 (Freshwater peatland) or 2 (Tidal wetland).",
+      call. = FALSE
+    )
+  }
+
   # Constants
   R <- 8.314 # J K-1 mol-1
 

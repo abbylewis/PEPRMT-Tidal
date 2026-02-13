@@ -76,8 +76,37 @@
 #' # data(example_dataset)
 #' # theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
-PEPRMT_GPP <- function(theta,
+PEPRMT_GPP <- function(theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674),
                        data) {
+  # -------------------------
+  # Check data structure
+  # -------------------------
+
+  data <- data.frame(data)
+  expected_colnames <- c(
+    "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "Salinity_daily_ave_ppt", "NO3_mg_L",
+    "SOM_MEM_gC_m3", "site"
+  )
+
+  if (!all(expected_colnames %in% colnames(data))) {
+    stop(paste0(
+      "Missing required inputs.\nThe following columns were not found in data:\n",
+      paste(expected_colnames[!expected_colnames %in% colnames(data)],
+        collapse = ", "
+      )
+    ))
+  }
+
+  # -------------------------
+  # Check parameters
+  # -------------------------
+
+  if (!is.numeric(theta) || length(theta) != 4) {
+    stop("GPP_theta must be a numeric vector of length 4.", call. = FALSE)
+  }
+
   #---CREATE A SPACE TO COLLECT ITERATIVE RESULTS---#
   q <- unique(as.integer(data$site))
   outcome_lst <- vector("list", length(q))

@@ -4,7 +4,12 @@
 \alias{PEPRMT_CH4}
 \title{Methane Exchange (CH4)}
 \usage{
-PEPRMT_CH4(theta, data, wetland_type)
+PEPRMT_CH4(
+  theta = c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 0.5120464,
+    486.4106939, 0.1020278),
+  data,
+  wetland_type
+)
 }
 \arguments{
 \item{theta}{Numeric vector of length 8 containing calibrated parameter
@@ -80,7 +85,8 @@ are used in every module.
 \examples{
 # Example
 # data(example_dataset)
-# theta <- c(14.90, 0.46, 16.78, 0.43, 15.88, 0.51, 486.41, 0.10)
+# theta <- c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 
+# 0.5120464, 486.4106939, 0.1020278)
 # out <- PEPRMT_CH4(theta, example_dataset, wetland_type = 2)
 }
 \references{

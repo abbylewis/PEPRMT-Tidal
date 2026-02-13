@@ -78,7 +78,49 @@
 #' # data(example_dataset)
 #' # theta <- c(18.4, 1487.6, 11.6, 61.3)
 #' # out <- PEPRMT_Reco(theta, example_dataset, wetland_type = 2)
-PEPRMT_Reco <- function(theta, data, wetland_type) {
+PEPRMT_Reco <- function(theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
+                        data,
+                        wetland_type) {
+  # -------------------------
+  # Check data structure
+  # -------------------------
+
+  data <- data.frame(data)
+  expected_colnames <- c(
+    "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "Salinity_daily_ave_ppt", "NO3_mg_L",
+    "SOM_MEM_gC_m3", "site", "GPP_mod"
+  )
+
+  if (!all(expected_colnames %in% colnames(data))) {
+    stop(paste0(
+      "Missing required inputs.\nThe following columns were not found in data:\n",
+      paste(expected_colnames[!expected_colnames %in% colnames(data)],
+        collapse = ", "
+      )
+    ))
+  }
+
+  # -------------------------
+  # Check parameters
+  # -------------------------
+
+  if (!is.numeric(theta) || length(theta) != 4) {
+    stop("Reco_theta must be a numeric vector of length 4.", call. = FALSE)
+  }
+
+  # -------------------------
+  # Check wetland_type
+  # -------------------------
+
+  if (!is.numeric(wetland_type) || length(wetland_type) != 1 ||
+    !wetland_type %in% c(1, 2)) {
+    stop("wetland_type must be a single numeric value: 1 (Freshwater peatland) or 2 (Tidal wetland).",
+      call. = FALSE
+    )
+  }
+
   # SET UP Reco
   # SOM
   alpha1 <- 3e3 # g C m-2 d-1;--SET AS CONSTANT;

@@ -4,7 +4,11 @@
 \alias{PEPRMT_Reco}
 \title{Ecosystem Respiration (Reco)}
 \usage{
-PEPRMT_Reco(theta, data, wetland_type)
+PEPRMT_Reco(
+  theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
+  data,
+  wetland_type
+)
 }
 \arguments{
 \item{theta}{Numeric vector of length 4 containing calibrated parameter

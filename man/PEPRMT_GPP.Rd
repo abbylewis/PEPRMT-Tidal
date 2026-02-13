@@ -4,7 +4,7 @@
 \alias{PEPRMT_GPP}
 \title{Gross Primary Productivity (GPP)}
 \usage{
-PEPRMT_GPP(theta, data)
+PEPRMT_GPP(theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674), data)
 }
 \arguments{
 \item{theta}{Numeric vector of length 4 containing calibrated parameter
