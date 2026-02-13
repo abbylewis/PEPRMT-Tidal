@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # PEPRMT-Tidal
 
 PEPRMT-Tidal is a one-dimensional process-based model that predicts
@@ -26,24 +20,18 @@ Presented here is an updated version that works for tidal wetlands
 
 All PEPRMT modules use the same input structure, and all variables are
 at the daily time step. Modules are run in succession, first GPP, then
-R~eco~ and last CH~4~.
+Reco and last CH<sub>4</sub>.
 
-## GPP
-
-The GPP module using a light use efficiency equation to predict GPP. GPP
+<b>GPP:</b> The GPP module using a light use efficiency equation to predict GPP. GPP
 can be predicted using leaf area index (LAI) or a greenness index from
 Phenocam data, or remote sensing such as EVI or NDVI. PEPRMT-Tidal
 applied in Oikawa et al. (2024) uses EVI from Landsat.
 
-## R~eco~
+<b>R<sub>eco</sub>:</b> The R<sub>eco</sub> module uses a Dual Arrhenius Michaelis-Menten (DAMM) approach
+to predict R<sub>eco<s/ub> from two carbon pools.
 
-The R~eco~ module uses a Dual Arrhenius Michaelis-Menten (DAMM) approach
-to predict R~eco~ from two carbon pools.
-
-## CH~4~
-
-The CH~4~ module also uses the DAMM approach and includes inhibition
-factors to decrease CH~4~ production in presence of NO~3~ and SO~4~
+<b>CH<sub>4</sub>:</b> The CH<sub>4</sub> module also uses the DAMM approach and includes inhibition
+factors to decrease CH<sub>4</sub> production in presence of NO<sub>3</sub> and SO<sub>4</sub>
 
 # About the data: 
 
@@ -51,7 +39,7 @@ We have included here an example dataset used in Oikawa et al. (2024),
 which sources data from Ameriflux eddy covariance towers across the
 United States. These data have been filtered and gapfilled following
 methods outlined in Oikawa et al. 2023. Ancillary data from local tidal
-streams included continuous NO~3~ or salinity measurements are also
+streams included continuous NO<sub>3</sub> or salinity measurements are also
 included.
 
 # About the vignette: 
