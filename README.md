@@ -50,7 +50,7 @@ future users to better understand how the data need to be organized and
 how the modules run in sequence and feed into each other.
 
 If you have any questions, please contact Patty Oikawa
-[patty.oikawa\@gmail.com](mailto:patty.oikawa@gmail.com){.email} Thank
+[patty.oikawa\@gmail.com](mailto:patty.oikawa@gmail.com) Thank
 you!
 
 # References
