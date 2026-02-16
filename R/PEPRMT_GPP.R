@@ -76,8 +76,8 @@
 #' # data(example_dataset)
 #' # theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
-PEPRMT_GPP <- function(theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674),
-                       data) {
+PEPRMT_GPP <- function(data,
+                       theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674)) {
   # -------------------------
   # Check data structure
   # -------------------------

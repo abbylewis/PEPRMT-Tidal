@@ -91,12 +91,12 @@
 #' # theta <- c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 
 #' # 0.5120464, 486.4106939, 0.1020278)
 #' # out <- PEPRMT_CH4(theta, example_dataset, wetland_type = 2)
-PEPRMT_CH4 <- function(theta = c(
+PEPRMT_CH4 <- function(data,
+                       wetland_type,
+                       theta = c(
                          14.9025078, 0.4644174, 16.7845002, 0.4359649,
                          15.8857612, 0.5120464, 486.4106939, 0.1020278
-                       ),
-                       data,
-                       wetland_type) {
+                       )) {
   # -------------------------
   # Check data structure
   # -------------------------

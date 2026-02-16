@@ -5,21 +5,21 @@
 \title{Ecosystem Respiration (Reco)}
 \usage{
 PEPRMT_Reco(
-  theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
   data,
-  wetland_type
+  wetland_type,
+  theta = c(18.41329, 1487.65701, 11.65972, 61.29611)
 )
 }
 \arguments{
-\item{theta}{Numeric vector of length 4 containing calibrated parameter
-values. Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).}
-
 \item{data}{Data frame containing 16 required columns used as model inputs.
 See \strong{Details} for expected column structure.}
 
 \item{wetland_type}{Integer indicating wetland class: 1 = Freshwater
 peatland, 2 = Tidal wetland.}
+
+\item{theta}{Numeric vector of length 4 containing calibrated parameter
+values. Default values were determined via MCMC Bayesian fitting
+(Oikawa et al. 2023).}
 }
 \value{
 Updated dataframe containing:

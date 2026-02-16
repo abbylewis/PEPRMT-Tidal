@@ -4,15 +4,15 @@
 \alias{PEPRMT_GPP}
 \title{Gross Primary Productivity (GPP)}
 \usage{
-PEPRMT_GPP(theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674), data)
+PEPRMT_GPP(data, theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674))
 }
 \arguments{
+\item{data}{Data frame containing 15 required columns used as model inputs.
+See \strong{Details} for expected column structure.}
+
 \item{theta}{Numeric vector of length 4 containing calibrated parameter
 values. Default values were determined via MCMC Bayesian fitting
 (Oikawa et al. 2023).}
-
-\item{data}{Data frame containing 15 required columns used as model inputs.
-See \strong{Details} for expected column structure.}
 }
 \value{
 Updated dataframe containing:

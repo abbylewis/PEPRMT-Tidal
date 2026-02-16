@@ -5,22 +5,22 @@
 \title{Methane Exchange (CH4)}
 \usage{
 PEPRMT_CH4(
-  theta = c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 0.5120464,
-    486.4106939, 0.1020278),
   data,
-  wetland_type
+  wetland_type,
+  theta = c(14.9025078, 0.4644174, 16.7845002, 0.4359649, 15.8857612, 0.5120464,
+    486.4106939, 0.1020278)
 )
 }
 \arguments{
-\item{theta}{Numeric vector of length 8 containing calibrated parameter
-values. Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2024).}
-
 \item{data}{Data frame containing 18 required columns used as model inputs.
 See \strong{Details} for expected column structure.}
 
 \item{wetland_type}{Integer indicating wetland class:
 1 = Freshwater peatland, 2 = Tidal wetland.}
+
+\item{theta}{Numeric vector of length 8 containing calibrated parameter
+values. Default values were determined via MCMC Bayesian fitting
+(Oikawa et al. 2024).}
 }
 \value{
 Updated dataframe containing:

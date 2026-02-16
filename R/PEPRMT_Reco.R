@@ -78,9 +78,9 @@
 #' # data(example_dataset)
 #' # theta <- c(18.4, 1487.6, 11.6, 61.3)
 #' # out <- PEPRMT_Reco(theta, example_dataset, wetland_type = 2)
-PEPRMT_Reco <- function(theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
-                        data,
-                        wetland_type) {
+PEPRMT_Reco <- function(data,
+                        wetland_type,
+                        theta = c(18.41329, 1487.65701, 11.65972, 61.29611)) {
   # -------------------------
   # Check data structure
   # -------------------------
