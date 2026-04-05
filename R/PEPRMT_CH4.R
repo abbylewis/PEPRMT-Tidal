@@ -3,13 +3,29 @@
 #' Runs the PEPRMT methane production and transport module for freshwater
 #' peatlands or tidal wetlands at a daily time step.
 #'
-#' @param theta Numeric vector of length 8 containing calibrated parameter
-#'   values. Default values were determined via MCMC Bayesian fitting
-#'   (Oikawa et al. 2024).
 #' @param data Data frame containing 18 required columns used as model inputs.
-#'   See **Details** for expected column structure.
+#'   See **Details** for expected column names.
 #' @param wetland_type Integer indicating wetland class:
 #'   1 = Freshwater peatland, 2 = Tidal wetland.
+#' @param theta Numeric vector of length 8 containing calibrated methane
+#' parameters, in the following order:
+#'   \itemize{
+#'     \item Ea_SOM – Activation energy for methane production from soil
+#'     organic matter (kJ mol^-1)
+#'     \item kM_SOM – Half-saturation constant for SOM methane production
+#'     (g C m^-3 soil)
+#'     \item Ea_labile – Activation energy for methane production from
+#'     labile carbon (kJ mol^-1)
+#'     \item kM_labile – Half-saturation constant for labile methane production
+#'     (g C m^-3 soil)
+#'     \item Ea_oxi – Activation energy for methane oxidation (kJ mol^-1)
+#'     \item kM_oxi – Half-saturation constant for methane oxidation
+#'     (g C m^-3 soil)
+#'     \item kISO4 – Sulfate inhibition constant (mg L^-1)
+#'     \item kINO3 – Nitrate inhibition constant (mg L^-1)
+#'   }
+#' Default values were determined via MCMC Bayesian fitting
+#' (Oikawa et al. 2024).
 #'
 #' @description
 #' Methane production and transport module of the PEPRMT model (v1.0).
@@ -29,7 +45,7 @@
 #' All PEPRMT modules use the same input structure, although not all variables
 #' are used in every module.
 #'
-#' **Expected data column order:**
+#' **Required data columns:**
 #' 1. Continuous day of year
 #' 2. Discontinuous day of year
 #' 3. Year
@@ -94,8 +110,14 @@
 PEPRMT_CH4 <- function(data,
                        wetland_type,
                        theta = c(
-                         14.9025078, 0.4644174, 16.7845002, 0.4359649,
-                         15.8857612, 0.5120464, 486.4106939, 0.1020278
+                         14.9025078, # Ea SOM CH4 Activation Energy for SOM pool (kJ mol-1)
+                         0.4644174, # kMSOM CH4 Half-saturation constant for SOM pool (gC m-3 soil)
+                         16.7845002, # Ea labile CH4 Activation Energy for labile pool (kJ mol-1)
+                         0.4359649, # kMlabile CH4 Half-saturation constant for labile pool (gC m-3 soil)
+                         15.8857612, # Ea oxi CH4 Activation Energy for CH4 oxidation (kJ mol-1)
+                         0.5120464, # kMoxi CH4 Half-saturation constant for CH4 oxidation (gC m-3 soil)
+                         486.4106939, # kISO4 Sulfate inhibition factor (mg L-1)
+                         0.1020278 # kINO3 Nitrate inhibition factor  (mg L-1)
                        )) {
   # -------------------------
   # Check data structure
@@ -246,7 +268,7 @@ PEPRMT_CH4 <- function(data,
     #--METHANE TRANSPORT ACROSS DATA---
     for (t in 1:length(DOY)) {
       # parameter for plant-mediated transport--function of GPP
-      trans2[t] <- ((GPP_2[t] + (GPPmax)) / GPPmax)
+      trans2[t] <- ((-1 * GPP_2[t]) / GPPmax)
       if (trans2[t] < 0) {
         trans2[t] <- 0
       }

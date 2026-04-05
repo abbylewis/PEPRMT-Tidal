@@ -96,21 +96,21 @@ run_PEPRMT <- function(data,
                        ),
                        CH4_theta = c(
                          # Ea_CH4_SOC kJ mol-1
-                         14.9025078 + 67.1,
+                         14.9025078,
                          # kM_CH4_SOC
-                         0.4644174 + 17,
-                         # Ea_CH4_labile kJ mol-1- used to be 16.7845002 + 71.1
-                         86.7,
+                         0.4644174,
+                         # Ea_CH4_labile kJ mol-1
+                         16.7845002,
                          # kM_Ch4labile
-                         0.4359649 + 23,
+                         0.4359649,
                          # Ea_CH4_oxi
-                         15.8857612 + 75.4,
+                         15.8857612,
                          # kM_CH4oxi
-                         0.5120464 + 23,
-                         # 486.4106939, #kI_SO4
-                         100,
-                         # 0.1020278) #kI_NO3
-                         0.2
+                         0.5120464,
+                         # kI_SO4
+                         486.4106939,
+                         # kI_NO3
+                         0.1020278
                        )) {
   # -------------------------
   # Check data structure

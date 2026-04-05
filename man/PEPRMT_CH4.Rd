@@ -13,13 +13,29 @@ PEPRMT_CH4(
 }
 \arguments{
 \item{data}{Data frame containing 18 required columns used as model inputs.
-See \strong{Details} for expected column structure.}
+See \strong{Details} for expected column names.}
 
 \item{wetland_type}{Integer indicating wetland class:
 1 = Freshwater peatland, 2 = Tidal wetland.}
 
-\item{theta}{Numeric vector of length 8 containing calibrated parameter
-values. Default values were determined via MCMC Bayesian fitting
+\item{theta}{Numeric vector of length 8 containing calibrated methane
+parameters, in the following order:
+\itemize{
+\item Ea_SOM – Activation energy for methane production from soil
+organic matter (kJ mol^-1)
+\item kM_SOM – Half-saturation constant for SOM methane production
+(g C m^-3 soil)
+\item Ea_labile – Activation energy for methane production from
+labile carbon (kJ mol^-1)
+\item kM_labile – Half-saturation constant for labile methane production
+(g C m^-3 soil)
+\item Ea_oxi – Activation energy for methane oxidation (kJ mol^-1)
+\item kM_oxi – Half-saturation constant for methane oxidation
+(g C m^-3 soil)
+\item kISO4 – Sulfate inhibition constant (mg L^-1)
+\item kINO3 – Nitrate inhibition constant (mg L^-1)
+}
+Default values were determined via MCMC Bayesian fitting
 (Oikawa et al. 2024).}
 }
 \value{
@@ -60,7 +76,7 @@ All variables are expected at a daily time step.
 All PEPRMT modules use the same input structure, although not all variables
 are used in every module.
 
-\strong{Expected data column order:}
+\strong{Required data columns:}
 \enumerate{
 \item Continuous day of year
 \item Discontinuous day of year

@@ -17,8 +17,22 @@ See \strong{Details} for expected column structure.}
 \item{wetland_type}{Integer indicating wetland class: 1 = Freshwater
 peatland, 2 = Tidal wetland.}
 
-\item{theta}{Numeric vector of length 4 containing calibrated parameter
-values. Default values were determined via MCMC Bayesian fitting
+\item{theta}{Numeric vector of length 4 containing calibrated parameters,
+in the following order:
+\itemize{
+\item Ea_SOM – Activation energy controlling the temperature sensitivity
+of decomposition from the soil organic matter (SOM) pool
+(kJ mol^-1).
+\item kM_SOM – Half-saturation constant for microbial decomposition of
+the SOM pool (g C m^-3 soil).
+Determines substrate limitation strength for SOM respiration.
+\item Ea_labile – Activation energy controlling the temperature sensitivity
+of decomposition from the labile carbon pool (kJ mol^-1).
+\item kM_labile – Half-saturation constant for microbial decomposition of
+the labile carbon pool (g C m^-3 soil).
+Determines substrate limitation strength for labile respiration.
+}
+Default values were determined via MCMC Bayesian fitting
 (Oikawa et al. 2023).}
 }
 \value{
@@ -50,7 +64,7 @@ PEPRMT_GPP, then PEPRMT_Reco, then PEPRMT_CH4.
 
 All variables are expected at a daily time step.
 
-\strong{Expected data column order:}
+\strong{Required data columns:}
 \enumerate{
 \item Continuous day of year
 \item Discontinuous day of year

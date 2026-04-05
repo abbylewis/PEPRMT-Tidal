@@ -10,7 +10,26 @@
 #'   See **Details** for expected column structure.
 #' @param wetland_type Integer indicating wetland class: 1 = Freshwater
 #' peatland, 2 = Tidal wetland.
-#'
+#' @param theta Numeric vector of length 4 containing calibrated parameter
+#'   values. 
+#' @param theta Numeric vector of length 4 containing calibrated parameters, 
+#' in the following order:
+#'  \itemize{
+#'    \item Ea_SOM – Activation energy controlling the temperature sensitivity
+#'    of decomposition from the soil organic matter (SOM) pool
+#'    (kJ mol^-1).
+#'    \item kM_SOM – Half-saturation constant for microbial decomposition of
+#'    the SOM pool (g C m^-3 soil).
+#'    Determines substrate limitation strength for SOM respiration.
+#'    \item Ea_labile – Activation energy controlling the temperature sensitivity
+#'    of decomposition from the labile carbon pool (kJ mol^-1).
+#'    \item kM_labile – Half-saturation constant for microbial decomposition of
+#'    the labile carbon pool (g C m^-3 soil).
+#'    Determines substrate limitation strength for labile respiration.
+#'  }
+#' Default values were determined via MCMC Bayesian fitting
+#'   (Oikawa et al. 2023).
+#'   
 #' @description
 #' Ecosystem respiration (Reco) module of the PEPRMT model (v1.0).
 #'
@@ -24,7 +43,7 @@
 #'
 #' All variables are expected at a daily time step.
 #'
-#' **Expected data column order:**
+#' **Required data columns:**
 #' 1. Continuous day of year
 #' 2. Discontinuous day of year
 #' 3. Year
@@ -80,7 +99,11 @@
 #' # out <- PEPRMT_Reco(theta, example_dataset, wetland_type = 2)
 PEPRMT_Reco <- function(data,
                         wetland_type,
-                        theta = c(18.41329, 1487.65701, 11.65972, 61.29611)) {
+                        theta = c(18.41329, # Ea SOM Activation Energy for SOM pool (kJ mol-1)
+                                  1487.65701, # kMSOM Half-saturation constant for SOM pool (gC m-3 soil)
+                                  11.65972, # Ea labile Activation Energy for labile pool (kJ mol-1)
+                                  61.29611 # kMlabile Half-saturation constant for labile pool (gC m-3 soil)
+                                  )) {
   # -------------------------
   # Check data structure
   # -------------------------

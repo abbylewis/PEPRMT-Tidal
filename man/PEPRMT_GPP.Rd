@@ -10,17 +10,27 @@ PEPRMT_GPP(data, theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674))
 \item{data}{Data frame containing 15 required columns used as model inputs.
 See \strong{Details} for expected column structure.}
 
-\item{theta}{Numeric vector of length 4 containing calibrated parameter
-values. Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).}
+\item{theta}{Numeric vector of length 4 containing calibrated parameter values.
+Default values were determined via MCMC Bayesian fitting (Oikawa et al. 2023).
+a0: Empirical intercept parameter for the fPAR scaling function
+(unitless).
+a1:  Empirical slope parameter for the fPAR scaling function
+(unitless).
+Ha:  Activation energy governing the temperature response of
+photosynthesis for general crop-type vegetation (kJ mol^-1).
+Controls the rate of increase in GPP with temperature below the
+thermal optimum.
+Hd:  Deactivation energy controlling the decline in photosynthesis
+above the thermal optimum (kJ mol^-1).
+Determines the rate of decrease in GPP at high temperatures.}
 }
 \value{
 Updated dataframe containing:
 \describe{
 \item{GPP}{gross primary productivity
-(g C CO2 m^-2 day^-1)}
+(g C CO2 m^-2 d^-1)}
 \item{APAR}{absorbed photosynthetically active radiation
-(umol m-2 d-1)}
+(umol m^-2 d^-1)}
 }
 }
 \description{
@@ -44,7 +54,7 @@ predicted using leaf area index (LAI) or a greenness index from Phenocam data
 or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al.
 2023 uses EVI from Landsat
 
-\strong{Expected data column order:}
+\strong{Required data columns:}
 \enumerate{
 \item Continuous day of year
 \item Discontinuous day of year
@@ -66,7 +76,6 @@ or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al.
 \examples{
 # Example
 # data(example_dataset)
-# theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
 # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
 }
 \references{

@@ -3,11 +3,21 @@
 #' Runs the PEPRMT gross primary productivity module for freshwater peatlands or
 #' tidal wetlands at a daily time step.
 #'
-#' @param theta Numeric vector of length 4 containing calibrated parameter
-#'   values. Default values were determined via MCMC Bayesian fitting
-#'   (Oikawa et al. 2023).
 #' @param data Data frame containing 15 required columns used as model inputs.
 #'   See **Details** for expected column structure.
+#' @param theta Numeric vector of length 4 containing calibrated parameter values. 
+#'   Default values were determined via MCMC Bayesian fitting (Oikawa et al. 2023).
+#'   a0: Empirical intercept parameter for the fPAR scaling function 
+#'   (unitless).
+#'   a1:  Empirical slope parameter for the fPAR scaling function
+#'   (unitless).
+#'   Ha:  Activation energy governing the temperature response of
+#'   photosynthesis for general crop-type vegetation (kJ mol^-1).
+#'   Controls the rate of increase in GPP with temperature below the
+#'   thermal optimum.
+#'   Hd:  Deactivation energy controlling the decline in photosynthesis
+#'   above the thermal optimum (kJ mol^-1).
+#'   Determines the rate of decrease in GPP at high temperatures.
 #'
 #' @description
 #' Gross Primary Productivity (GPP) module of the PEPRMT model (v1.0).
@@ -27,7 +37,7 @@
 #' or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al.
 #' 2023 uses EVI from Landsat
 #'
-#' **Expected data column order:**
+#' **Required data columns:**
 #' 1. Continuous day of year
 #' 2. Discontinuous day of year
 #' 3. Year
@@ -47,9 +57,9 @@
 #' @returns Updated dataframe containing:
 #' \describe{
 #'   \item{GPP}{gross primary productivity
-#'     (g C CO2 m^-2 day^-1)}
+#'     (g C CO2 m^-2 d^-1)}
 #'   \item{APAR}{absorbed photosynthetically active radiation
-#'     (umol m-2 d-1)}
+#'     (umol m^-2 d^-1)}
 #' }
 #'
 #' @references
@@ -74,10 +84,22 @@
 #' @examples
 #' # Example
 #' # data(example_dataset)
-#' # theta <- c(0.7479271, 1.0497113, 149.4681710, 94.4532674)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
 PEPRMT_GPP <- function(data,
-                       theta = c(0.7479271, 1.0497113, 149.4681710, 94.4532674)) {
+                       theta = c(0.7479271, #a0
+                                 1.0497113, #a1
+                                 149.4681710, #Ha
+                                 94.4532674) # Hd
+                       ) {
+  # -------------------------
+  # Unpack parameters
+  # -------------------------
+  
+  a0 <- theta[1]
+  a1 <- theta[2]
+  Ha <- theta[3] + 30
+  Hd <- theta[4] + 100
+  
   # -------------------------
   # Check data structure
   # -------------------------
@@ -102,9 +124,21 @@ PEPRMT_GPP <- function(data,
   # -------------------------
   # Check parameters
   # -------------------------
-
   if (!is.numeric(theta) || length(theta) != 4) {
     stop("GPP_theta must be a numeric vector of length 4.", call. = FALSE)
+  }
+
+  if (!is.numeric(a0) || length(a0) != 1) {
+    stop("a0 must be numeric", call. = FALSE)
+  }
+  if (!is.numeric(a1) || length(a1) != 1) {
+    stop("a1 must be numeric", call. = FALSE)
+  }
+  if (!is.numeric(Ha) || length(Ha) != 1) {
+    stop("Ha must be numeric", call. = FALSE)
+  }
+  if (!is.numeric(Hd) || length(Hd) != 1) {
+    stop("Hd must be numeric", call. = FALSE)
   }
 
   #---CREATE A SPACE TO COLLECT ITERATIVE RESULTS---#
@@ -137,9 +171,6 @@ PEPRMT_GPP <- function(data,
 
 
     ########## COMPUTE GPP################################
-    # PARAMETERS
-    Ha <- theta[3] + 30 # default=30;#activation energy for general crop plant (KJ mol-1)
-    Hd <- theta[4] + 100 # default=100;(KJ mol-1)
     # CONSTANTS
     vcopt <- 1.0
     R_t <- 0.00831 # KJ mol-1 K-1
@@ -153,7 +184,7 @@ PEPRMT_GPP <- function(data,
       fPAR_2 <- 0.95 * (1 - exp(-k * LAI_2)) # for an LAI=4.9, fpar=0.87--Yuan 2007
       fPAR_2 <- (fPAR_2 / 2) * 10^4
     } else {
-      fPAR_2 <- theta[1] + theta[2] * GI_2
+      fPAR_2 <- a0 + a1 * GI_2
     }
 
 
