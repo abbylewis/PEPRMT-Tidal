@@ -110,12 +110,12 @@
 PEPRMT_CH4 <- function(data,
                        wetland_type,
                        theta = c(
-                         14.9025078, # Ea SOM CH4 Activation Energy for SOM pool (kJ mol-1)
-                         0.4644174, # kMSOM CH4 Half-saturation constant for SOM pool (gC m-3 soil)
-                         16.7845002, # Ea labile CH4 Activation Energy for labile pool (kJ mol-1)
-                         0.4359649, # kMlabile CH4 Half-saturation constant for labile pool (gC m-3 soil)
-                         15.8857612, # Ea oxi CH4 Activation Energy for CH4 oxidation (kJ mol-1)
-                         0.5120464, # kMoxi CH4 Half-saturation constant for CH4 oxidation (gC m-3 soil)
+                         14.9025078 + 67.1, # Ea SOM CH4 Activation Energy for SOM pool (kJ mol-1)
+                         0.4644174 + 17, # kMSOM CH4 Half-saturation constant for SOM pool (gC m-3 soil)
+                         16.7845002 + 71.1, # Ea labile CH4 Activation Energy for labile pool (kJ mol-1)
+                         0.4359649 + 23, # kMlabile CH4 Half-saturation constant for labile pool (gC m-3 soil)
+                         15.8857612 + 75.4, # Ea oxi CH4 Activation Energy for CH4 oxidation (kJ mol-1)
+                         0.5120464 + 23, # kMoxi CH4 Half-saturation constant for CH4 oxidation (gC m-3 soil)
                          486.4106939, # kISO4 Sulfate inhibition factor (mg L-1)
                          0.1020278 # kINO3 Nitrate inhibition factor  (mg L-1)
                        )) {
@@ -165,17 +165,17 @@ PEPRMT_CH4 <- function(data,
   # CH4 PARAMETERS
   # SOC pool
   M_alpha1 <- 6.2e13 # gC m-3 d-1
-  M_ea1 <- (theta[1] + 67.1) * 1000 # parameter in kJ mol-1 multiplied by 1000 = J mol-1
-  M_km1 <- theta[2] + 17 # g C m-3
+  M_ea1 <- (theta[1]) * 1000 # parameter in kJ mol-1 multiplied by 1000 = J mol-1
+  M_km1 <- theta[2] # g C m-3
   # Labile C pool
   M_alpha2 <- 6.2e14 # gC m-3 d-1
-  M_ea2 <- (theta[3] + 71.1) * 1000 # J mol-1
-  M_km2 <- theta[4] + 23 # g C m-3
+  M_ea2 <- (theta[3]) * 1000 # J mol-1
+  M_km2 <- theta[4] # g C m-3
 
   # CH4 oxidation parameters
   M_alpha3 <- 6.2e13 # gC m-3 d-1
-  M_ea3 <- (theta[5] + 75.4) * 1000 # J mol-1
-  M_km3 <- theta[6] + 23 # g C m-3
+  M_ea3 <- (theta[5]) * 1000 # J mol-1
+  M_km3 <- theta[6] # g C m-3
 
   # Salinity sulfate parameters
   kiSO4 <- theta[7] # mg L^-1
