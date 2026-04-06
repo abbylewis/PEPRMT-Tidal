@@ -8,7 +8,8 @@ PEPRMT_CH4(
   data,
   wetland_type,
   theta = c(14.9025078 + 67.1, 0.4644174 + 17, 16.7845002 + 71.1, 0.4359649 + 23,
-    15.8857612 + 75.4, 0.5120464 + 23, 486.4106939, 0.1020278)
+    15.8857612 + 75.4, 0.5120464 + 23, 486.4106939, 0.1020278),
+  k_plant_oxi = 0.35
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ labile carbon (kJ mol^-1)
 }
 Default values were determined via MCMC Bayesian fitting
 (Oikawa et al. 2024).}
+
+\item{k_plant_oxi}{Fraction of CH4 oxidized during transport}
 }
 \value{
 Updated dataframe containing:

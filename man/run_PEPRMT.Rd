@@ -10,7 +10,9 @@ run_PEPRMT(
   GPP_theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674),
   Reco_theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
   CH4_theta = c(14.9025078 + 67.1, 0.4644174 + 17, 16.7845002 + 71.1, 0.4359649 + 23,
-    15.8857612 + 75.4, 0.5120464 + 23, 486.4106939, 0.1020278)
+    15.8857612 + 75.4, 0.5120464 + 23, 486.4106939, 0.1020278),
+  k_plant_oxi = 0.35,
+  T_opt_GPP = 25 + 274.15
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ values. Default values were determined via MCMC Bayesian fitting
 \item{CH4_theta}{Numeric vector of length 8 containing calibrated CH4 parameter
 values. Default values were determined via MCMC Bayesian fitting
 (Oikawa et al. 2023).}
+
+\item{k_plant_oxi}{Fraction of CH4 oxidized during transport}
+
+\item{T_opt_GPP}{Optimum temperature for GPP}
 }
 \value{
 Updated dataframe containing:

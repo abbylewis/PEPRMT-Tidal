@@ -15,6 +15,8 @@
 #' @param CH4_theta Numeric vector of length 8 containing calibrated CH4 parameter
 #'   values. Default values were determined via MCMC Bayesian fitting
 #'   (Oikawa et al. 2023).
+#' @param k_plant_oxi Fraction of CH4 oxidized during transport
+#' @param T_opt_GPP Optimum temperature for GPP
 #'
 #' @description
 #' Wrapper function to run all steps of the PEPRMT model (v1.0).
@@ -111,7 +113,10 @@ run_PEPRMT <- function(data,
                          486.4106939,
                          # kI_NO3
                          0.1020278
-                       )) {
+                       ),
+                       k_plant_oxi = 0.35,
+                       T_opt_GPP = 25 + 274.15 # (K); our Temp opt for Ps is 25C
+                       ) {
   # -------------------------
   # Check data structure
   # -------------------------
@@ -166,7 +171,8 @@ run_PEPRMT <- function(data,
 
   # GPP
 
-  GPP_mod_data <- PEPRMT_GPP(theta = GPP_theta, data = data)
+  GPP_mod_data <- PEPRMT_GPP(theta = GPP_theta, data = data, 
+                             T_opt_GPP = T_opt_GPP)
 
   # Create a new dataset that includes model results
   results <- data |>
@@ -202,7 +208,8 @@ run_PEPRMT <- function(data,
   CH4_mod_data <- PEPRMT_CH4(
     theta = CH4_theta,
     data = data,
-    wetland_type = wetland_type
+    wetland_type = wetland_type,
+    k_plant_oxi = k_plant_oxi
   )
 
   # Add model results

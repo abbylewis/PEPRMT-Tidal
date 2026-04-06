@@ -18,6 +18,7 @@
 #'   Hd:  Deactivation energy controlling the decline in photosynthesis
 #'   above the thermal optimum (kJ mol^-1).
 #'   Determines the rate of decrease in GPP at high temperatures.
+#' @param T_opt_GPP Temperature optimum for GPP
 #'
 #' @description
 #' Gross Primary Productivity (GPP) module of the PEPRMT model (v1.0).
@@ -89,7 +90,8 @@ PEPRMT_GPP <- function(data,
                        theta = c(0.7479271, #a0
                                  1.0497113, #a1
                                  149.4681710, #Ha
-                                 94.4532674) # Hd
+                                 94.4532674), # Hd
+                       T_opt_GPP = 25 + 274.15 # (K); our Temp opt for Ps is 25C
                        ) {
   # -------------------------
   # Unpack parameters
@@ -174,7 +176,6 @@ PEPRMT_GPP <- function(data,
     # CONSTANTS
     vcopt <- 1.0
     R_t <- 0.00831 # KJ mol-1 K-1
-    T_opt <- 25 + 274.15 # (K); our Temp opt for Ps is 25C
 
     # EQUATIONS
     # Decide how to compute fPAR
@@ -197,8 +198,8 @@ PEPRMT_GPP <- function(data,
     NPP_FPAR_T <- vector("numeric", length(DOY))
 
     for (t in 1:length(DOY)) {
-      exponent1 <- (Ha * (AirT_K[t] - T_opt)) / (AirT_K[t] * R_t * T_opt)
-      exponent2 <- (Hd * (AirT_K[t] - T_opt)) / (AirT_K[t] * R_t * T_opt)
+      exponent1 <- (Ha * (AirT_K[t] - T_opt_GPP)) / (AirT_K[t] * R_t * T_opt_GPP)
+      exponent2 <- (Hd * (AirT_K[t] - T_opt_GPP)) / (AirT_K[t] * R_t * T_opt_GPP)
       top <- Hd * exp(exponent1)
       bottom <- Hd - (Ha * (1 - exp(exponent2)))
       vct[t] <- vcopt * (top / bottom)

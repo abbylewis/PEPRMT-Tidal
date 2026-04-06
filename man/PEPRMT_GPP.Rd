@@ -4,7 +4,11 @@
 \alias{PEPRMT_GPP}
 \title{Gross Primary Productivity (GPP)}
 \usage{
-PEPRMT_GPP(data, theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674))
+PEPRMT_GPP(
+  data,
+  theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674),
+  T_opt_GPP = 25 + 274.15
+)
 }
 \arguments{
 \item{data}{Data frame containing 15 required columns used as model inputs.
@@ -23,6 +27,8 @@ thermal optimum.
 Hd:  Deactivation energy controlling the decline in photosynthesis
 above the thermal optimum (kJ mol^-1).
 Determines the rate of decrease in GPP at high temperatures.}
+
+\item{T_opt_GPP}{Temperature optimum for GPP}
 }
 \value{
 Updated dataframe containing:
