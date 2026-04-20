@@ -208,7 +208,7 @@ All variables are expected at a daily time step.
 All PEPRMT modules use the same input structure, although not all
 variables are used in every module.
 
-**Expected data column order:**
+**Required data columns (order does not matter):**
 
 1.  Continuous day of year
 
