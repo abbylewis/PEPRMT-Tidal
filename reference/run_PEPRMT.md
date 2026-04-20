@@ -8,12 +8,24 @@ Wrapper function to run all steps of the PEPRMT model (v1.0).
 run_PEPRMT(
   data,
   wetland_type,
-  GPP_theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674),
-  Reco_theta = c(18.41329, 1487.65701, 11.65972, 61.29611),
-  CH4_theta = c(14.9025078 + 67.1, 0.4644174 + 17, 16.7845002 + 71.1, 0.4359649 + 23,
-    15.8857612 + 75.4, 0.5120464 + 23, 486.4106939, 0.1020278),
-  k_plant_oxi = 0.35,
-  T_opt_GPP = 25 + 274.15
+  a0 = 0.7479271,
+  a1 = 1.0497113,
+  Ha = 149.468171 + 30,
+  Hd = 94.4532674 + 100,
+  T_opt_GPP = 25 + 274.15,
+  Ea_SOM = 18.41329,
+  kM_SOM = 1487.65701,
+  Ea_labile = 11.65972,
+  kM_labile = 61.29611,
+  Ea_SOM_CH4 = 14.9025078 + 67.1,
+  kM_SOM_CH4 = 0.4644174 + 17,
+  Ea_labile_CH4 = 16.7845002 + 71.1,
+  kM_labile_CH4 = 0.4359649 + 23,
+  Ea_oxi_CH4 = 15.8857612 + 75.4,
+  kM_oxi_CH4 = 0.5120464 + 23,
+  kI_SO4 = 486.4106939,
+  kI_NO3 = 0.1020278,
+  k_plant_oxi = 0.35
 )
 ```
 
@@ -29,31 +41,98 @@ run_PEPRMT(
   Integer indicating wetland class: 1 = Freshwater peatland, 2 = Tidal
   wetland.
 
-- GPP_theta:
+- a0:
 
-  Numeric vector of length 4 containing calibrated GPP parameter values.
-  Default values were determined via MCMC Bayesian fitting (Oikawa et
-  al. 2023).
+  Empirical intercept parameter for the fPAR scaling function
+  (unitless). Used in GPP module.
 
-- Reco_theta:
+- a1:
 
-  Numeric vector of length 4 containing calibrated Reco parameter
-  values. Default values were determined via MCMC Bayesian fitting
-  (Oikawa et al. 2023).
+  Empirical slope parameter for the fPAR scaling function (unitless).
+  Used in GPP module.
 
-- CH4_theta:
+- Ha:
 
-  Numeric vector of length 8 containing calibrated CH4 parameter values.
-  Default values were determined via MCMC Bayesian fitting (Oikawa et
-  al. 2023).
+  Activation energy governing the temperature response of photosynthesis
+  for general crop-type vegetation (kJ mol^-1). Controls the rate of
+  increase in GPP with temperature below the thermal optimum. Used in
+  GPP module.
 
-- k_plant_oxi:
+- Hd:
 
-  Fraction of CH4 oxidized during transport
+  Deactivation energy controlling the decline in photosynthesis above
+  the thermal optimum (kJ mol^-1). Determines the rate of decrease in
+  GPP at high temperatures. Used in GPP module.
 
 - T_opt_GPP:
 
-  Optimum temperature for GPP
+  Temperature optimum for GPP. Used in GPP module.
+
+- Ea_SOM:
+
+  – Activation energy controlling the temperature sensitivity of
+  decomposition from the soil organic matter (SOM) pool (kJ mol^-1).
+  Used in Reco module.
+
+- kM_SOM:
+
+  – Half-saturation constant for microbial decomposition of the SOM pool
+  (g C m^-3 soil). Determines substrate limitation strength for SOM
+  respiration. Used in Reco module.
+
+- Ea_labile:
+
+  Activation energy controlling the temperature sensitivity of
+  decomposition from the labile carbon pool (kJ mol^-1). Used in Reco
+  module.
+
+- kM_labile:
+
+  Half-saturation constant for microbial decomposition of the labile
+  carbon pool (g C m^-3 soil). Determines substrate limitation strength
+  for labile respiration. Used in Reco module.
+
+- Ea_SOM_CH4:
+
+  Activation energy for methane production from soil organic matter (kJ
+  mol^-1). Used in CH4 module.
+
+- kM_SOM_CH4:
+
+  Half-saturation constant for SOM methane production (g C m^-3 soil).
+  Used in CH4 module.
+
+- Ea_labile_CH4:
+
+  Activation energy for methane production from labile carbon (kJ
+  mol^-1). Used in CH4 module.
+
+- kM_labile_CH4:
+
+  Half-saturation constant for labile methane production (g C m^-3
+  soil). Used in CH4 module.
+
+- Ea_oxi_CH4:
+
+  Activation energy for methane oxidation (kJ mol^-1). Used in CH4
+  module.
+
+- kM_oxi_CH4:
+
+  Half-saturation constant for methane oxidation (g C m^-3 soil). Used
+  in CH4 module.
+
+- kI_SO4:
+
+  Sulfate inhibition constant (mg L^-1). Used in CH4 module.
+
+- kI_NO3:
+
+  Nitrate inhibition constant (mg L^-1). Used in CH4 module.
+
+- k_plant_oxi:
+
+  Fraction of CH4 oxidized during transport. Used in CH4 module.
 
 ## Value
 

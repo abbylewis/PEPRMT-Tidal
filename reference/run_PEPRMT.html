@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PEPRMT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,12 +44,24 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_PEPRMT</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">wetland_type</span>,</span>
-<span>  GPP_theta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7479271</span>, <span class="fl">1.0497113</span>, <span class="fl">149.468171</span>, <span class="fl">94.4532674</span><span class="op">)</span>,</span>
-<span>  Reco_theta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18.41329</span>, <span class="fl">1487.65701</span>, <span class="fl">11.65972</span>, <span class="fl">61.29611</span><span class="op">)</span>,</span>
-<span>  CH4_theta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14.9025078</span> <span class="op">+</span> <span class="fl">67.1</span>, <span class="fl">0.4644174</span> <span class="op">+</span> <span class="fl">17</span>, <span class="fl">16.7845002</span> <span class="op">+</span> <span class="fl">71.1</span>, <span class="fl">0.4359649</span> <span class="op">+</span> <span class="fl">23</span>,</span>
-<span>    <span class="fl">15.8857612</span> <span class="op">+</span> <span class="fl">75.4</span>, <span class="fl">0.5120464</span> <span class="op">+</span> <span class="fl">23</span>, <span class="fl">486.4106939</span>, <span class="fl">0.1020278</span><span class="op">)</span>,</span>
-<span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span>,</span>
-<span>  T_opt_GPP <span class="op">=</span> <span class="fl">25</span> <span class="op">+</span> <span class="fl">274.15</span></span>
+<span>  a0 <span class="op">=</span> <span class="fl">0.7479271</span>,</span>
+<span>  a1 <span class="op">=</span> <span class="fl">1.0497113</span>,</span>
+<span>  Ha <span class="op">=</span> <span class="fl">149.468171</span> <span class="op">+</span> <span class="fl">30</span>,</span>
+<span>  Hd <span class="op">=</span> <span class="fl">94.4532674</span> <span class="op">+</span> <span class="fl">100</span>,</span>
+<span>  T_opt_GPP <span class="op">=</span> <span class="fl">25</span> <span class="op">+</span> <span class="fl">274.15</span>,</span>
+<span>  Ea_SOM <span class="op">=</span> <span class="fl">18.41329</span>,</span>
+<span>  kM_SOM <span class="op">=</span> <span class="fl">1487.65701</span>,</span>
+<span>  Ea_labile <span class="op">=</span> <span class="fl">11.65972</span>,</span>
+<span>  kM_labile <span class="op">=</span> <span class="fl">61.29611</span>,</span>
+<span>  Ea_SOM_CH4 <span class="op">=</span> <span class="fl">14.9025078</span> <span class="op">+</span> <span class="fl">67.1</span>,</span>
+<span>  kM_SOM_CH4 <span class="op">=</span> <span class="fl">0.4644174</span> <span class="op">+</span> <span class="fl">17</span>,</span>
+<span>  Ea_labile_CH4 <span class="op">=</span> <span class="fl">16.7845002</span> <span class="op">+</span> <span class="fl">71.1</span>,</span>
+<span>  kM_labile_CH4 <span class="op">=</span> <span class="fl">0.4359649</span> <span class="op">+</span> <span class="fl">23</span>,</span>
+<span>  Ea_oxi_CH4 <span class="op">=</span> <span class="fl">15.8857612</span> <span class="op">+</span> <span class="fl">75.4</span>,</span>
+<span>  kM_oxi_CH4 <span class="op">=</span> <span class="fl">0.5120464</span> <span class="op">+</span> <span class="fl">23</span>,</span>
+<span>  kI_SO4 <span class="op">=</span> <span class="fl">486.4106939</span>,</span>
+<span>  kI_NO3 <span class="op">=</span> <span class="fl">0.1020278</span>,</span>
+<span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -67,30 +79,98 @@ See <strong>Details</strong> for expected column structure.</p></dd>
 1 = Freshwater peatland, 2 = Tidal wetland.</p></dd>
 
 
-<dt id="arg-gpp-theta">GPP_theta<a class="anchor" aria-label="anchor" href="#arg-gpp-theta"></a></dt>
-<dd><p>Numeric vector of length 4 containing calibrated GPP parameter
-values. Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).</p></dd>
+<dt id="arg-a-">a0<a class="anchor" aria-label="anchor" href="#arg-a-"></a></dt>
+<dd><p>Empirical intercept parameter for the fPAR scaling function
+(unitless). Used in GPP module.</p></dd>
 
 
-<dt id="arg-reco-theta">Reco_theta<a class="anchor" aria-label="anchor" href="#arg-reco-theta"></a></dt>
-<dd><p>Numeric vector of length 4 containing calibrated Reco parameter
-values. Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).</p></dd>
+<dt id="arg-a-">a1<a class="anchor" aria-label="anchor" href="#arg-a-"></a></dt>
+<dd><p>Empirical slope parameter for the fPAR scaling function
+(unitless). Used in GPP module.</p></dd>
 
 
-<dt id="arg-ch-theta">CH4_theta<a class="anchor" aria-label="anchor" href="#arg-ch-theta"></a></dt>
-<dd><p>Numeric vector of length 8 containing calibrated CH4 parameter
-values. Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).</p></dd>
+<dt id="arg-ha">Ha<a class="anchor" aria-label="anchor" href="#arg-ha"></a></dt>
+<dd><p>Activation energy governing the temperature response of
+photosynthesis for general crop-type vegetation (kJ mol^-1).
+Controls the rate of increase in GPP with temperature below the
+thermal optimum. Used in GPP module.</p></dd>
 
 
-<dt id="arg-k-plant-oxi">k_plant_oxi<a class="anchor" aria-label="anchor" href="#arg-k-plant-oxi"></a></dt>
-<dd><p>Fraction of CH4 oxidized during transport</p></dd>
+<dt id="arg-hd">Hd<a class="anchor" aria-label="anchor" href="#arg-hd"></a></dt>
+<dd><p>Deactivation energy controlling the decline in photosynthesis
+above the thermal optimum (kJ mol^-1). Determines the rate of decrease in
+GPP at high temperatures. Used in GPP module.</p></dd>
 
 
 <dt id="arg-t-opt-gpp">T_opt_GPP<a class="anchor" aria-label="anchor" href="#arg-t-opt-gpp"></a></dt>
-<dd><p>Optimum temperature for GPP</p></dd>
+<dd><p>Temperature optimum for GPP. Used in GPP module.</p></dd>
+
+
+<dt id="arg-ea-som">Ea_SOM<a class="anchor" aria-label="anchor" href="#arg-ea-som"></a></dt>
+<dd><p>– Activation energy controlling the temperature sensitivity
+of decomposition from the soil organic matter (SOM) pool
+(kJ mol^-1). Used in Reco module.</p></dd>
+
+
+<dt id="arg-km-som">kM_SOM<a class="anchor" aria-label="anchor" href="#arg-km-som"></a></dt>
+<dd><p>– Half-saturation constant for microbial decomposition of
+the SOM pool (g C m^-3 soil). Determines substrate limitation strength for
+SOM respiration. Used in Reco module.</p></dd>
+
+
+<dt id="arg-ea-labile">Ea_labile<a class="anchor" aria-label="anchor" href="#arg-ea-labile"></a></dt>
+<dd><p>Activation energy controlling the temperature sensitivity
+of decomposition from the labile carbon pool (kJ mol^-1). Used in Reco
+module.</p></dd>
+
+
+<dt id="arg-km-labile">kM_labile<a class="anchor" aria-label="anchor" href="#arg-km-labile"></a></dt>
+<dd><p>Half-saturation constant for microbial decomposition of
+the labile carbon pool (g C m^-3 soil). Determines substrate limitation
+strength for labile respiration. Used in Reco module.</p></dd>
+
+
+<dt id="arg-ea-som-ch-">Ea_SOM_CH4<a class="anchor" aria-label="anchor" href="#arg-ea-som-ch-"></a></dt>
+<dd><p>Activation energy for methane production from soil
+organic matter (kJ mol^-1). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-km-som-ch-">kM_SOM_CH4<a class="anchor" aria-label="anchor" href="#arg-km-som-ch-"></a></dt>
+<dd><p>Half-saturation constant for SOM methane production
+(g C m^-3 soil). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-ea-labile-ch-">Ea_labile_CH4<a class="anchor" aria-label="anchor" href="#arg-ea-labile-ch-"></a></dt>
+<dd><p>Activation energy for methane production from
+labile carbon (kJ mol^-1). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-km-labile-ch-">kM_labile_CH4<a class="anchor" aria-label="anchor" href="#arg-km-labile-ch-"></a></dt>
+<dd><p>Half-saturation constant for labile methane production
+(g C m^-3 soil). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-ea-oxi-ch-">Ea_oxi_CH4<a class="anchor" aria-label="anchor" href="#arg-ea-oxi-ch-"></a></dt>
+<dd><p>Activation energy for methane oxidation (kJ mol^-1). Used
+in CH4 module.</p></dd>
+
+
+<dt id="arg-km-oxi-ch-">kM_oxi_CH4<a class="anchor" aria-label="anchor" href="#arg-km-oxi-ch-"></a></dt>
+<dd><p>Half-saturation constant for methane oxidation
+(g C m^-3 soil). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-ki-so-">kI_SO4<a class="anchor" aria-label="anchor" href="#arg-ki-so-"></a></dt>
+<dd><p>Sulfate inhibition constant (mg L^-1). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-ki-no-">kI_NO3<a class="anchor" aria-label="anchor" href="#arg-ki-no-"></a></dt>
+<dd><p>Nitrate inhibition constant (mg L^-1). Used in CH4 module.</p></dd>
+
+
+<dt id="arg-k-plant-oxi">k_plant_oxi<a class="anchor" aria-label="anchor" href="#arg-k-plant-oxi"></a></dt>
+<dd><p>Fraction of CH4 oxidized during transport. Used in CH4
+module.</p></dd>
 
 </dl></div>
     <div class="section level2">

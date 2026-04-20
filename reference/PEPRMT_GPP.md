@@ -1,13 +1,18 @@
 # Gross Primary Productivity (GPP)
 
 Gross Primary Productivity (GPP) module of the PEPRMT model (v1.0).
+Default values were determined via MCMC Bayesian fitting (Oikawa et al.
+2023).
 
 ## Usage
 
 ``` r
 PEPRMT_GPP(
   data,
-  theta = c(0.7479271, 1.0497113, 149.468171, 94.4532674),
+  a0 = 0.7479271,
+  a1 = 1.0497113,
+  Ha = 149.468171 + 30,
+  Hd = 94.4532674 + 100,
   T_opt_GPP = 25 + 274.15
 )
 ```
@@ -19,19 +24,26 @@ PEPRMT_GPP(
   Data frame containing 15 required columns used as model inputs. See
   **Details** for expected column structure.
 
-- theta:
+- a0:
 
-  Numeric vector of length 4 containing calibrated parameter values.
-  Default values were determined via MCMC Bayesian fitting (Oikawa et
-  al. 2023). a0: Empirical intercept parameter for the fPAR scaling
-  function (unitless). a1: Empirical slope parameter for the fPAR
-  scaling function (unitless). Ha: Activation energy governing the
-  temperature response of photosynthesis for general crop-type
-  vegetation (kJ mol^-1). Controls the rate of increase in GPP with
-  temperature below the thermal optimum. Hd: Deactivation energy
-  controlling the decline in photosynthesis above the thermal optimum
-  (kJ mol^-1). Determines the rate of decrease in GPP at high
-  temperatures.
+  Empirical intercept parameter for the fPAR scaling function
+  (unitless).
+
+- a1:
+
+  Empirical slope parameter for the fPAR scaling function (unitless).
+
+- Ha:
+
+  Activation energy governing the temperature response of photosynthesis
+  for general crop-type vegetation (kJ mol^-1). Controls the rate of
+  increase in GPP with temperature below the thermal optimum.
+
+- Hd:
+
+  Deactivation energy controlling the decline in photosynthesis above
+  the thermal optimum (kJ mol^-1). Determines the rate of decrease in
+  GPP at high temperatures.
 
 - T_opt_GPP:
 

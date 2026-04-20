@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PEPRMT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PEPRMT_Reco</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">wetland_type</span>,</span>
-<span>  theta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18.41329</span>, <span class="fl">1487.65701</span>, <span class="fl">11.65972</span>, <span class="fl">61.29611</span><span class="op">)</span></span>
+<span>  Ea_SOM <span class="op">=</span> <span class="fl">18.41329</span>,</span>
+<span>  kM_SOM <span class="op">=</span> <span class="fl">1487.65701</span>,</span>
+<span>  Ea_labile <span class="op">=</span> <span class="fl">11.65972</span>,</span>
+<span>  kM_labile <span class="op">=</span> <span class="fl">61.29611</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -62,21 +65,27 @@ See <strong>Details</strong> for expected column structure.</p></dd>
 peatland, 2 = Tidal wetland.</p></dd>
 
 
-<dt id="arg-theta">theta<a class="anchor" aria-label="anchor" href="#arg-theta"></a></dt>
-<dd><p>Numeric vector of length 4 containing calibrated parameters,
-in the following order:</p><ul><li><p>Ea_SOM – Activation energy controlling the temperature sensitivity
+<dt id="arg-ea-som">Ea_SOM<a class="anchor" aria-label="anchor" href="#arg-ea-som"></a></dt>
+<dd><p>– Activation energy controlling the temperature sensitivity
 of decomposition from the soil organic matter (SOM) pool
-(kJ mol^-1).</p></li>
-<li><p>kM_SOM – Half-saturation constant for microbial decomposition of
+(kJ mol^-1).</p></dd>
+
+
+<dt id="arg-km-som">kM_SOM<a class="anchor" aria-label="anchor" href="#arg-km-som"></a></dt>
+<dd><p>– Half-saturation constant for microbial decomposition of
 the SOM pool (g C m^-3 soil).
-Determines substrate limitation strength for SOM respiration.</p></li>
-<li><p>Ea_labile – Activation energy controlling the temperature sensitivity
-of decomposition from the labile carbon pool (kJ mol^-1).</p></li>
-<li><p>kM_labile – Half-saturation constant for microbial decomposition of
+Determines substrate limitation strength for SOM respiration.</p></dd>
+
+
+<dt id="arg-ea-labile">Ea_labile<a class="anchor" aria-label="anchor" href="#arg-ea-labile"></a></dt>
+<dd><p>– Activation energy controlling the temperature sensitivity
+of decomposition from the labile carbon pool (kJ mol^-1).</p></dd>
+
+
+<dt id="arg-km-labile">kM_labile<a class="anchor" aria-label="anchor" href="#arg-km-labile"></a></dt>
+<dd><p>– Half-saturation constant for microbial decomposition of
 the labile carbon pool (g C m^-3 soil).
-Determines substrate limitation strength for labile respiration.</p></li>
-</ul><p>Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).</p></dd>
+Determines substrate limitation strength for labile respiration.</p></dd>
 
 </dl></div>
     <div class="section level2">

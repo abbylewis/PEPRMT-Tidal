@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PEPRMT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,8 +44,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">PEPRMT_CH4</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">wetland_type</span>,</span>
-<span>  theta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14.9025078</span> <span class="op">+</span> <span class="fl">67.1</span>, <span class="fl">0.4644174</span> <span class="op">+</span> <span class="fl">17</span>, <span class="fl">16.7845002</span> <span class="op">+</span> <span class="fl">71.1</span>, <span class="fl">0.4359649</span> <span class="op">+</span> <span class="fl">23</span>,</span>
-<span>    <span class="fl">15.8857612</span> <span class="op">+</span> <span class="fl">75.4</span>, <span class="fl">0.5120464</span> <span class="op">+</span> <span class="fl">23</span>, <span class="fl">486.4106939</span>, <span class="fl">0.1020278</span><span class="op">)</span>,</span>
+<span>  Ea_SOM_CH4 <span class="op">=</span> <span class="fl">14.9025078</span> <span class="op">+</span> <span class="fl">67.1</span>,</span>
+<span>  kM_SOM_CH4 <span class="op">=</span> <span class="fl">0.4644174</span> <span class="op">+</span> <span class="fl">17</span>,</span>
+<span>  Ea_labile_CH4 <span class="op">=</span> <span class="fl">16.7845002</span> <span class="op">+</span> <span class="fl">71.1</span>,</span>
+<span>  kM_labile_CH4 <span class="op">=</span> <span class="fl">0.4359649</span> <span class="op">+</span> <span class="fl">23</span>,</span>
+<span>  Ea_oxi_CH4 <span class="op">=</span> <span class="fl">15.8857612</span> <span class="op">+</span> <span class="fl">75.4</span>,</span>
+<span>  kM_oxi_CH4 <span class="op">=</span> <span class="fl">0.5120464</span> <span class="op">+</span> <span class="fl">23</span>,</span>
+<span>  kI_SO4 <span class="op">=</span> <span class="fl">486.4106939</span>,</span>
+<span>  kI_NO3 <span class="op">=</span> <span class="fl">0.1020278</span>,</span>
 <span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -64,23 +70,41 @@ See <strong>Details</strong> for expected column names.</p></dd>
 1 = Freshwater peatland, 2 = Tidal wetland.</p></dd>
 
 
-<dt id="arg-theta">theta<a class="anchor" aria-label="anchor" href="#arg-theta"></a></dt>
-<dd><p>Numeric vector of length 8 containing calibrated methane
-parameters, in the following order:</p><ul><li><p>Ea_SOM – Activation energy for methane production from soil
-organic matter (kJ mol^-1)</p></li>
-<li><p>kM_SOM – Half-saturation constant for SOM methane production
-(g C m^-3 soil)</p></li>
-<li><p>Ea_labile – Activation energy for methane production from
-labile carbon (kJ mol^-1)</p></li>
-<li><p>kM_labile – Half-saturation constant for labile methane production
-(g C m^-3 soil)</p></li>
-<li><p>Ea_oxi – Activation energy for methane oxidation (kJ mol^-1)</p></li>
-<li><p>kM_oxi – Half-saturation constant for methane oxidation
-(g C m^-3 soil)</p></li>
-<li><p>kISO4 – Sulfate inhibition constant (mg L^-1)</p></li>
-<li><p>kINO3 – Nitrate inhibition constant (mg L^-1)</p></li>
-</ul><p>Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2024).</p></dd>
+<dt id="arg-ea-som-ch-">Ea_SOM_CH4<a class="anchor" aria-label="anchor" href="#arg-ea-som-ch-"></a></dt>
+<dd><p>Activation energy for methane production from soil
+organic matter (kJ mol^-1)</p></dd>
+
+
+<dt id="arg-km-som-ch-">kM_SOM_CH4<a class="anchor" aria-label="anchor" href="#arg-km-som-ch-"></a></dt>
+<dd><p>Half-saturation constant for SOM methane production
+(g C m^-3 soil)</p></dd>
+
+
+<dt id="arg-ea-labile-ch-">Ea_labile_CH4<a class="anchor" aria-label="anchor" href="#arg-ea-labile-ch-"></a></dt>
+<dd><p>Activation energy for methane production from
+labile carbon (kJ mol^-1)</p></dd>
+
+
+<dt id="arg-km-labile-ch-">kM_labile_CH4<a class="anchor" aria-label="anchor" href="#arg-km-labile-ch-"></a></dt>
+<dd><p>Half-saturation constant for labile methane production
+(g C m^-3 soil)</p></dd>
+
+
+<dt id="arg-ea-oxi-ch-">Ea_oxi_CH4<a class="anchor" aria-label="anchor" href="#arg-ea-oxi-ch-"></a></dt>
+<dd><p>Activation energy for methane oxidation (kJ mol^-1)</p></dd>
+
+
+<dt id="arg-km-oxi-ch-">kM_oxi_CH4<a class="anchor" aria-label="anchor" href="#arg-km-oxi-ch-"></a></dt>
+<dd><p>Half-saturation constant for methane oxidation
+(g C m^-3 soil)</p></dd>
+
+
+<dt id="arg-ki-so-">kI_SO4<a class="anchor" aria-label="anchor" href="#arg-ki-so-"></a></dt>
+<dd><p>– Sulfate inhibition constant (mg L^-1)</p></dd>
+
+
+<dt id="arg-ki-no-">kI_NO3<a class="anchor" aria-label="anchor" href="#arg-ki-no-"></a></dt>
+<dd><p>– Nitrate inhibition constant (mg L^-1)</p></dd>
 
 
 <dt id="arg-k-plant-oxi">k_plant_oxi<a class="anchor" aria-label="anchor" href="#arg-k-plant-oxi"></a></dt>
@@ -118,7 +142,8 @@ labile carbon (kJ mol^-1)</p></li>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Runs the PEPRMT methane production and transport module for freshwater
-peatlands or tidal wetlands at a daily time step.</p>
+peatlands or tidal wetlands at a daily time step. Default parameter values
+were determined via MCMC Bayesian fitting (Oikawa et al. 2024).</p>
 <p>The PEPRMT model was originally parameterized for restored freshwater
 wetlands in the Sacramento–San Joaquin River Delta, California, USA
 (Oikawa et al. 2017) and later updated for tidal wetlands with inhibition
