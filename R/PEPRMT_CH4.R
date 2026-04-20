@@ -1,31 +1,26 @@
 #' Methane Exchange (CH4)
 #'
 #' Runs the PEPRMT methane production and transport module for freshwater
-#' peatlands or tidal wetlands at a daily time step.
+#' peatlands or tidal wetlands at a daily time step. Default parameter values 
+#' were determined via MCMC Bayesian fitting (Oikawa et al. 2024).
 #'
 #' @param data Data frame containing 18 required columns used as model inputs.
 #'   See **Details** for expected column names.
 #' @param wetland_type Integer indicating wetland class:
 #'   1 = Freshwater peatland, 2 = Tidal wetland.
-#' @param theta Numeric vector of length 8 containing calibrated methane
-#' parameters, in the following order:
-#'   \itemize{
-#'     \item Ea_SOM – Activation energy for methane production from soil
-#'     organic matter (kJ mol^-1)
-#'     \item kM_SOM – Half-saturation constant for SOM methane production
-#'     (g C m^-3 soil)
-#'     \item Ea_labile – Activation energy for methane production from
-#'     labile carbon (kJ mol^-1)
-#'     \item kM_labile – Half-saturation constant for labile methane production
-#'     (g C m^-3 soil)
-#'     \item Ea_oxi – Activation energy for methane oxidation (kJ mol^-1)
-#'     \item kM_oxi – Half-saturation constant for methane oxidation
-#'     (g C m^-3 soil)
-#'     \item kISO4 – Sulfate inhibition constant (mg L^-1)
-#'     \item kINO3 – Nitrate inhibition constant (mg L^-1)
-#'   }
-#' Default values were determined via MCMC Bayesian fitting
-#' (Oikawa et al. 2024).
+#' @param Ea_SOM_CH4 Activation energy for methane production from soil
+#'   organic matter (kJ mol^-1)
+#' @param kM_SOM_CH4 Half-saturation constant for SOM methane production
+#'   (g C m^-3 soil)
+#' @param Ea_labile_CH4 Activation energy for methane production from
+#'   labile carbon (kJ mol^-1)
+#' @param kM_labile_CH4 Half-saturation constant for labile methane production
+#'   (g C m^-3 soil)
+#' @param Ea_oxi_CH4 Activation energy for methane oxidation (kJ mol^-1)
+#' @param kM_oxi_CH4 Half-saturation constant for methane oxidation
+#'   (g C m^-3 soil)
+#' @param kI_SO4 – Sulfate inhibition constant (mg L^-1)
+#' @param kI_NO3 – Nitrate inhibition constant (mg L^-1)
 #' @param k_plant_oxi Fraction of CH4 oxidized during transport
 #'
 #' @description
@@ -110,16 +105,14 @@
 #' # out <- PEPRMT_CH4(theta, example_dataset, wetland_type = 2)
 PEPRMT_CH4 <- function(data,
                        wetland_type,
-                       theta = c(
-                         14.9025078 + 67.1, # Ea SOM CH4 Activation Energy for SOM pool (kJ mol-1)
-                         0.4644174 + 17, # kMSOM CH4 Half-saturation constant for SOM pool (gC m-3 soil)
-                         16.7845002 + 71.1, # Ea labile CH4 Activation Energy for labile pool (kJ mol-1)
-                         0.4359649 + 23, # kMlabile CH4 Half-saturation constant for labile pool (gC m-3 soil)
-                         15.8857612 + 75.4, # Ea oxi CH4 Activation Energy for CH4 oxidation (kJ mol-1)
-                         0.5120464 + 23, # kMoxi CH4 Half-saturation constant for CH4 oxidation (gC m-3 soil)
-                         486.4106939, # kISO4 Sulfate inhibition factor (mg L-1)
-                         0.1020278 # kINO3 Nitrate inhibition factor  (mg L-1)
-                       ),
+                       Ea_SOM_CH4 = 14.9025078 + 67.1, # Activation Energy for SOM pool (kJ mol-1)
+                       kM_SOM_CH4 = 0.4644174 + 17, # Half-saturation constant for SOM pool (gC m-3 soil)
+                       Ea_labile_CH4 = 16.7845002 + 71.1, # Activation Energy for labile pool (kJ mol-1)
+                       kM_labile_CH4 = 0.4359649 + 23, # Half-saturation constant for labile pool (gC m-3 soil)
+                       Ea_oxi_CH4 = 15.8857612 + 75.4, # Activation Energy for CH4 oxidation (kJ mol-1)
+                       kM_oxi_CH4 = 0.5120464 + 23, # Half-saturation constant for CH4 oxidation (gC m-3 soil)
+                       kI_SO4 = 486.4106939, # Sulfate inhibition factor (mg L-1)
+                       kI_NO3 = 0.1020278, # Nitrate inhibition factor  (mg L-1)
                        k_plant_oxi = 0.35 # percent oxidized during transport
                        ) {
   # -------------------------
@@ -147,9 +140,7 @@ PEPRMT_CH4 <- function(data,
   # Check parameters
   # -------------------------
 
-  if (!is.numeric(theta) || length(theta) != 8) {
-    stop("CH4_theta must be a numeric vector of length 8.", call. = FALSE)
-  }
+  # TO DO: Add parameter checks
 
   # -------------------------
   # Check wetland_type
@@ -168,21 +159,17 @@ PEPRMT_CH4 <- function(data,
   # CH4 PARAMETERS
   # SOC pool
   M_alpha1 <- 6.2e13 # gC m-3 d-1
-  M_ea1 <- (theta[1]) * 1000 # parameter in kJ mol-1 multiplied by 1000 = J mol-1
-  M_km1 <- theta[2] # g C m-3
+  M_ea1 <- Ea_SOM_CH4 * 1000 # parameter in kJ mol-1 multiplied by 1000 = J mol-1
+  M_km1 <- kM_SOM_CH4 # g C m-3
   # Labile C pool
   M_alpha2 <- 6.2e14 # gC m-3 d-1
-  M_ea2 <- (theta[3]) * 1000 # J mol-1
-  M_km2 <- theta[4] # g C m-3
+  M_ea2 <- Ea_labile_CH4 * 1000 # J mol-1
+  M_km2 <- kM_labile_CH4 # g C m-3
 
   # CH4 oxidation parameters
   M_alpha3 <- 6.2e13 # gC m-3 d-1
-  M_ea3 <- (theta[5]) * 1000 # J mol-1
-  M_km3 <- theta[6] # g C m-3
-
-  # Salinity sulfate parameters
-  kiSO4 <- theta[7] # mg L^-1
-  kiNO3 <- theta[8] # mg L^-1
+  M_ea3 <- Ea_oxi_CH4 * 1000 # J mol-1
+  M_km3 <- kM_oxi_CH4 # g C m-3
 
   # Parameters for hydrodynamic flux
   k <- 0.04 # gas transfer velocity (m day-1)
@@ -280,9 +267,9 @@ PEPRMT_CH4 <- function(data,
 
       conc_so4AV[t] <- 7.4e-8 * (Sal[t] * 1e6) * 1000 # ppm or mg L-1
 
-      M1[t] <- (M_Vmax1[t] * (S1_2[t] / (M_km1 + S1_2[t]))) * (kiSO4 / (kiSO4 + conc_so4AV[t])) * (kiNO3 / (kiNO3 + NO3[t])) # gC m2 d-1
+      M1[t] <- (M_Vmax1[t] * (S1_2[t] / (M_km1 + S1_2[t]))) * (kI_SO4 / (kI_SO4 + conc_so4AV[t])) * (kI_NO3 / (kI_NO3 + NO3[t])) # gC m2 d-1
 
-      M2[t] <- (M_Vmax2[t] * (S2_2[t] / (M_km2 + S2_2[t]))) * (kiSO4 / (kiSO4 + conc_so4AV[t])) * (kiNO3 / (kiNO3 + NO3[t])) # gC m2 d-1
+      M2[t] <- (M_Vmax2[t] * (S2_2[t] / (M_km2 + S2_2[t]))) * (kI_SO4 / (kI_SO4 + conc_so4AV[t])) * (kI_NO3 / (kI_NO3 + NO3[t])) # gC m2 d-1
 
       if (M1[t] < 0) {
         M1[t] <- 0

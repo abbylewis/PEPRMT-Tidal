@@ -7,8 +7,14 @@
 PEPRMT_CH4(
   data,
   wetland_type,
-  theta = c(14.9025078 + 67.1, 0.4644174 + 17, 16.7845002 + 71.1, 0.4359649 + 23,
-    15.8857612 + 75.4, 0.5120464 + 23, 486.4106939, 0.1020278),
+  Ea_SOM_CH4 = 14.9025078 + 67.1,
+  kM_SOM_CH4 = 0.4644174 + 17,
+  Ea_labile_CH4 = 16.7845002 + 71.1,
+  kM_labile_CH4 = 0.4359649 + 23,
+  Ea_oxi_CH4 = 15.8857612 + 75.4,
+  kM_oxi_CH4 = 0.5120464 + 23,
+  kI_SO4 = 486.4106939,
+  kI_NO3 = 0.1020278,
   k_plant_oxi = 0.35
 )
 }
@@ -19,25 +25,26 @@ See \strong{Details} for expected column names.}
 \item{wetland_type}{Integer indicating wetland class:
 1 = Freshwater peatland, 2 = Tidal wetland.}
 
-\item{theta}{Numeric vector of length 8 containing calibrated methane
-parameters, in the following order:
-\itemize{
-\item Ea_SOM – Activation energy for methane production from soil
-organic matter (kJ mol^-1)
-\item kM_SOM – Half-saturation constant for SOM methane production
-(g C m^-3 soil)
-\item Ea_labile – Activation energy for methane production from
-labile carbon (kJ mol^-1)
-\item kM_labile – Half-saturation constant for labile methane production
-(g C m^-3 soil)
-\item Ea_oxi – Activation energy for methane oxidation (kJ mol^-1)
-\item kM_oxi – Half-saturation constant for methane oxidation
-(g C m^-3 soil)
-\item kISO4 – Sulfate inhibition constant (mg L^-1)
-\item kINO3 – Nitrate inhibition constant (mg L^-1)
-}
-Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2024).}
+\item{Ea_SOM_CH4}{Activation energy for methane production from soil
+organic matter (kJ mol^-1)}
+
+\item{kM_SOM_CH4}{Half-saturation constant for SOM methane production
+(g C m^-3 soil)}
+
+\item{Ea_labile_CH4}{Activation energy for methane production from
+labile carbon (kJ mol^-1)}
+
+\item{kM_labile_CH4}{Half-saturation constant for labile methane production
+(g C m^-3 soil)}
+
+\item{Ea_oxi_CH4}{Activation energy for methane oxidation (kJ mol^-1)}
+
+\item{kM_oxi_CH4}{Half-saturation constant for methane oxidation
+(g C m^-3 soil)}
+
+\item{kI_SO4}{– Sulfate inhibition constant (mg L^-1)}
+
+\item{kI_NO3}{– Nitrate inhibition constant (mg L^-1)}
 
 \item{k_plant_oxi}{Fraction of CH4 oxidized during transport}
 }
@@ -63,7 +70,8 @@ Methane production and transport module of the PEPRMT model (v1.0).
 }
 \details{
 Runs the PEPRMT methane production and transport module for freshwater
-peatlands or tidal wetlands at a daily time step.
+peatlands or tidal wetlands at a daily time step. Default parameter values
+were determined via MCMC Bayesian fitting (Oikawa et al. 2024).
 
 The PEPRMT model was originally parameterized for restored freshwater
 wetlands in the Sacramento–San Joaquin River Delta, California, USA

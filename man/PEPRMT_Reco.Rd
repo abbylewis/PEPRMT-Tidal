@@ -7,7 +7,10 @@
 PEPRMT_Reco(
   data,
   wetland_type,
-  theta = c(18.41329, 1487.65701, 11.65972, 61.29611)
+  Ea_SOM = 18.41329,
+  kM_SOM = 1487.65701,
+  Ea_labile = 11.65972,
+  kM_labile = 61.29611
 )
 }
 \arguments{
@@ -17,23 +20,20 @@ See \strong{Details} for expected column structure.}
 \item{wetland_type}{Integer indicating wetland class: 1 = Freshwater
 peatland, 2 = Tidal wetland.}
 
-\item{theta}{Numeric vector of length 4 containing calibrated parameters,
-in the following order:
-\itemize{
-\item Ea_SOM – Activation energy controlling the temperature sensitivity
+\item{Ea_SOM}{– Activation energy controlling the temperature sensitivity
 of decomposition from the soil organic matter (SOM) pool
-(kJ mol^-1).
-\item kM_SOM – Half-saturation constant for microbial decomposition of
+(kJ mol^-1).}
+
+\item{kM_SOM}{– Half-saturation constant for microbial decomposition of
 the SOM pool (g C m^-3 soil).
-Determines substrate limitation strength for SOM respiration.
-\item Ea_labile – Activation energy controlling the temperature sensitivity
-of decomposition from the labile carbon pool (kJ mol^-1).
-\item kM_labile – Half-saturation constant for microbial decomposition of
+Determines substrate limitation strength for SOM respiration.}
+
+\item{Ea_labile}{– Activation energy controlling the temperature sensitivity
+of decomposition from the labile carbon pool (kJ mol^-1).}
+
+\item{kM_labile}{– Half-saturation constant for microbial decomposition of
 the labile carbon pool (g C m^-3 soil).
-Determines substrate limitation strength for labile respiration.
-}
-Default values were determined via MCMC Bayesian fitting
-(Oikawa et al. 2023).}
+Determines substrate limitation strength for labile respiration.}
 }
 \value{
 Updated dataframe containing:

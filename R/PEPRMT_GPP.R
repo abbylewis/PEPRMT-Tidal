@@ -5,23 +5,22 @@
 #'
 #' @param data Data frame containing 15 required columns used as model inputs.
 #'   See **Details** for expected column structure.
-#' @param theta Numeric vector of length 4 containing calibrated parameter values. 
-#'   Default values were determined via MCMC Bayesian fitting (Oikawa et al. 2023).
-#'   a0: Empirical intercept parameter for the fPAR scaling function 
+#' @param a0 Empirical intercept parameter for the fPAR scaling function 
 #'   (unitless).
-#'   a1:  Empirical slope parameter for the fPAR scaling function
+#' @param a1  Empirical slope parameter for the fPAR scaling function
 #'   (unitless).
-#'   Ha:  Activation energy governing the temperature response of
+#' @param Ha  Activation energy governing the temperature response of
 #'   photosynthesis for general crop-type vegetation (kJ mol^-1).
 #'   Controls the rate of increase in GPP with temperature below the
 #'   thermal optimum.
-#'   Hd:  Deactivation energy controlling the decline in photosynthesis
+#' @param Hd  Deactivation energy controlling the decline in photosynthesis
 #'   above the thermal optimum (kJ mol^-1).
 #'   Determines the rate of decrease in GPP at high temperatures.
 #' @param T_opt_GPP Temperature optimum for GPP
 #'
 #' @description
-#' Gross Primary Productivity (GPP) module of the PEPRMT model (v1.0).
+#' Gross Primary Productivity (GPP) module of the PEPRMT model (v1.0). 
+#' Default values were determined via MCMC Bayesian fitting (Oikawa et al. 2023).
 #'
 #' @details
 #' The PEPRMT model was originally parameterized for restored freshwater
@@ -87,20 +86,12 @@
 #' # data(example_dataset)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
 PEPRMT_GPP <- function(data,
-                       theta = c(0.7479271, #a0
-                                 1.0497113, #a1
-                                 149.4681710, #Ha
-                                 94.4532674), # Hd
+                       a0 = 0.7479271,
+                       a1 = 1.0497113,
+                       Ha = 149.4681710 + 30,
+                       Hd = 94.4532674 + 100,
                        T_opt_GPP = 25 + 274.15 # (K); our Temp opt for Ps is 25C
                        ) {
-  # -------------------------
-  # Unpack parameters
-  # -------------------------
-  
-  a0 <- theta[1]
-  a1 <- theta[2]
-  Ha <- theta[3] + 30
-  Hd <- theta[4] + 100
   
   # -------------------------
   # Check data structure
@@ -126,10 +117,6 @@ PEPRMT_GPP <- function(data,
   # -------------------------
   # Check parameters
   # -------------------------
-  if (!is.numeric(theta) || length(theta) != 4) {
-    stop("GPP_theta must be a numeric vector of length 4.", call. = FALSE)
-  }
-
   if (!is.numeric(a0) || length(a0) != 1) {
     stop("a0 must be numeric", call. = FALSE)
   }

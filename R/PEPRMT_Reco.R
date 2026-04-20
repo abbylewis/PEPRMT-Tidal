@@ -3,32 +3,21 @@
 #' Runs the PEPRMT ecosystem respiration module for freshwater peatlands or
 #' tidal wetlands at a daily time step.
 #'
-#' @param theta Numeric vector of length 4 containing calibrated parameter
-#'   values. Default values were determined via MCMC Bayesian fitting
-#'   (Oikawa et al. 2023).
 #' @param data Data frame containing 16 required columns used as model inputs.
 #'   See **Details** for expected column structure.
 #' @param wetland_type Integer indicating wetland class: 1 = Freshwater
 #' peatland, 2 = Tidal wetland.
-#' @param theta Numeric vector of length 4 containing calibrated parameter
-#'   values. 
-#' @param theta Numeric vector of length 4 containing calibrated parameters, 
-#' in the following order:
-#'  \itemize{
-#'    \item Ea_SOM – Activation energy controlling the temperature sensitivity
-#'    of decomposition from the soil organic matter (SOM) pool
-#'    (kJ mol^-1).
-#'    \item kM_SOM – Half-saturation constant for microbial decomposition of
-#'    the SOM pool (g C m^-3 soil).
-#'    Determines substrate limitation strength for SOM respiration.
-#'    \item Ea_labile – Activation energy controlling the temperature sensitivity
-#'    of decomposition from the labile carbon pool (kJ mol^-1).
-#'    \item kM_labile – Half-saturation constant for microbial decomposition of
-#'    the labile carbon pool (g C m^-3 soil).
-#'    Determines substrate limitation strength for labile respiration.
-#'  }
-#' Default values were determined via MCMC Bayesian fitting
-#'   (Oikawa et al. 2023).
+#' @param Ea_SOM – Activation energy controlling the temperature sensitivity
+#'   of decomposition from the soil organic matter (SOM) pool
+#'   (kJ mol^-1).
+#' @param kM_SOM – Half-saturation constant for microbial decomposition of
+#'   the SOM pool (g C m^-3 soil).
+#'   Determines substrate limitation strength for SOM respiration.
+#' @param Ea_labile – Activation energy controlling the temperature sensitivity
+#'   of decomposition from the labile carbon pool (kJ mol^-1).
+#' @param kM_labile – Half-saturation constant for microbial decomposition of
+#'   the labile carbon pool (g C m^-3 soil).
+#'   Determines substrate limitation strength for labile respiration.
 #'   
 #' @description
 #' Ecosystem respiration (Reco) module of the PEPRMT model (v1.0).
@@ -99,11 +88,10 @@
 #' # out <- PEPRMT_Reco(theta, example_dataset, wetland_type = 2)
 PEPRMT_Reco <- function(data,
                         wetland_type,
-                        theta = c(18.41329, # Ea SOM Activation Energy for SOM pool (kJ mol-1)
-                                  1487.65701, # kMSOM Half-saturation constant for SOM pool (gC m-3 soil)
-                                  11.65972, # Ea labile Activation Energy for labile pool (kJ mol-1)
-                                  61.29611 # kMlabile Half-saturation constant for labile pool (gC m-3 soil)
-                                  )) {
+                        Ea_SOM = 18.41329,
+                        kM_SOM = 1487.65701,
+                        Ea_labile = 11.65972,
+                        kM_labile = 61.29611) {
   # -------------------------
   # Check data structure
   # -------------------------
@@ -129,9 +117,7 @@ PEPRMT_Reco <- function(data,
   # Check parameters
   # -------------------------
 
-  if (!is.numeric(theta) || length(theta) != 4) {
-    stop("Reco_theta must be a numeric vector of length 4.", call. = FALSE)
-  }
+  # TO DO: Add parameter checks here
 
   # -------------------------
   # Check wetland_type
@@ -147,13 +133,13 @@ PEPRMT_Reco <- function(data,
   # SET UP Reco
   # SOM
   alpha1 <- 3e3 # g C m-2 d-1;--SET AS CONSTANT;
-  ea1 <- theta[1] * 1000 # J mol-1
-  km1 <- theta[2] # g C m-3
+  ea1 <- Ea_SOM * 1000 # J mol-1
+  km1 <- kM_SOM # g C m-3
 
   # LABILE
   alpha2 <- 3e3 # g C m-2 d-1 --SET AS CONSTANT
-  ea2 <- theta[3] * 1000 # J mol-1
-  km2 <- theta[4] # g C m-3
+  ea2 <- Ea_labile * 1000 # J mol-1
+  km2 <- kM_labile # g C m-3
 
   # initialize labile C pool-set to 0 initially
   C2_init <- 0 # in g C m-3
