@@ -141,7 +141,7 @@ All variables are expected at a daily time step.
 All PEPRMT modules use the same input structure, although not all variables
 are used in every module.
 
-\strong{Expected data column order:}
+\strong{Required data columns (order does not matter):}
 \enumerate{
 \item Continuous day of year
 \item Discontinuous day of year

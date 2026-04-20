@@ -65,7 +65,7 @@
 #' All PEPRMT modules use the same input structure, although not all variables
 #' are used in every module.
 #'
-#' **Expected data column order:**
+#' **Required data columns (order does not matter):**
 #' 1. Continuous day of year
 #' 2. Discontinuous day of year
 #' 3. Year
