@@ -210,32 +210,32 @@ variables are used in every module.
 
 **Required data columns (order does not matter):**
 
-1.  Continuous day of year
+1.  DOY: Continuous day of year
 
-2.  Discontinuous day of year
+2.  DOY_disc: Discontinuous day of year
 
 3.  Year
 
-4.  Air temperature (°C)
+4.  TA_C: Air temperature (°C)
 
-5.  Water table depth (cm)
+5.  WTD_cm: Water table depth (cm)
 
-6.  PAR (µmol m^-2 d^-1)
+6.  PAR_umol_m2_day: PAR (µmol m^-2 d^-1)
 
-7.  Leaf Area Index
+7.  LAI: Leaf Area Index
 
-8.  Greenness Index
+8.  EVI: Greenness Index
 
-9.  FPAR flag
+9.  FPAR: FPAR flag
 
-10. Light Use Efficiency
+10. LUE: Light Use Efficiency
 
-11. Wetland age (years)
+11. Wetland_age_years: Wetland age (years)
 
-12. Salinity (ppt)
+12. Salinity_daily_ave_ppt: Salinity (ppt)
 
-13. NO3 (mg L^-1)
+13. NO3_mg_L: NO3 (mg L^-1)
 
-14. Soil organic matter (g C m^-3)
+14. SOM_MEM_gC_m3: Soil organic matter (g C m^-3)
 
-15. Site identifier
+15. site: Site identifier
