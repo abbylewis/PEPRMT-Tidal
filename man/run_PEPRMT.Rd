@@ -143,20 +143,20 @@ are used in every module.
 
 \strong{Required data columns (order does not matter):}
 \enumerate{
-\item Continuous day of year
-\item Discontinuous day of year
+\item DOY: Continuous day of year
+\item DOY_disc: Discontinuous day of year
 \item Year
-\item Air temperature (°C)
-\item Water table depth (cm)
-\item PAR (µmol m^-2 d^-1)
-\item Leaf Area Index
-\item Greenness Index
-\item FPAR flag
-\item Light Use Efficiency
-\item Wetland age (years)
-\item Salinity (ppt)
-\item NO3 (mg L^-1)
-\item Soil organic matter (g C m^-3)
-\item Site identifier
+\item TA_C: Air temperature (°C)
+\item WTD_cm: Water table depth (cm)
+\item PAR_umol_m2_day: PAR (µmol m^-2 d^-1)
+\item LAI: Leaf Area Index
+\item EVI: Greenness Index
+\item FPAR: FPAR flag
+\item LUE: Light Use Efficiency
+\item Wetland_age_years: Wetland age (years)
+\item Salinity_daily_ave_ppt: Salinity (ppt)
+\item NO3_mg_L: NO3 (mg L^-1)
+\item SOM_MEM_gC_m3: Soil organic matter (g C m^-3)
+\item site: Site identifier
 }
 }
