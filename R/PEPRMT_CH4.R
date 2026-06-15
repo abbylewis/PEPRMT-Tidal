@@ -371,7 +371,7 @@ PEPRMT_CH4 <- function(data,
           Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi ## gC CH4 m-2 day-1  Plant mediated transport after oxidation
 
           # subtract the moles of methane lost from the pools (soil and water) to the atm
-          CH4water_store[t] <- CH4water[t] - Hydro_flux[t] - Plant_flux[t] # gC CH4 m-3 stored in the system
+          CH4water_store[t] <- M_full[t] - Hydro_flux[t] - Plant_flux[t] # gC CH4 m-3 stored in the system
 
           # If you start out the year with no water above the surface
         } else {
@@ -394,7 +394,7 @@ PEPRMT_CH4 <- function(data,
           Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] # gC m-3 d-1 Bulk Plant mediated transport
           Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
 
-          CH4water_store[t] <- CH4water[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
+          CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
         }
 
         # If you have water, then the CH4 should mix between the 2 layers and concentrations should be the same in water and soil
@@ -416,7 +416,7 @@ PEPRMT_CH4 <- function(data,
           Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
 
           # subtract the moles of methane lost from the pools (soil and #water) to the atm
-          CH4water_store[t] <- CH4water[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
+          CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
         } else {
           # if you don't have WT_2_adj above the soil, then all the CH4 in the water goes to the soil
           # First, account for increased concentration of CH4 in soil now that WT_2_adj has dropped
@@ -438,7 +438,7 @@ PEPRMT_CH4 <- function(data,
           Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] # gC m-3 d-1 Plant mediated transport
           Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
 
-          CH4water_store[t] <- CH4water[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
+          CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
         }
       }
     }
