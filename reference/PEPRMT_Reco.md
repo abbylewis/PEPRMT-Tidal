@@ -11,7 +11,10 @@ PEPRMT_Reco(
   Ea_SOM = 18.41329,
   kM_SOM = 1487.65701,
   Ea_labile = 11.65972,
-  kM_labile = 61.29611
+  kM_labile = 61.29611,
+  restart = F,
+  prev_S1sol = 0,
+  prev_S2sol = 0
 )
 ```
 
@@ -49,6 +52,18 @@ PEPRMT_Reco(
   carbon pool (g C m^-3 soil). Determines substrate limitation strength
   for labile respiration.
 
+- restart:
+
+  Would you like to restart the model with a known SOM pool?
+
+- prev_S1sol:
+
+  If restart, previous labile soil carbon pool
+
+- prev_S2sol:
+
+  If restart, previous soil organic carbon pool
+
 ## Value
 
 Updated dataframe containing:
@@ -61,11 +76,11 @@ Updated dataframe containing:
 
   Net ecosystem exchange of CO2 (g C CO2 m^-2 day^-1)
 
-- S1:
+- S1sol:
 
   Labile soil carbon pool (g C m^-3, top meter of soil)
 
-- S2:
+- S2sol:
 
   Soil organic carbon pool (g C m^-3, top meter of soil)
 
@@ -104,19 +119,17 @@ All variables are expected at a daily time step.
 
 9.  FPAR flag
 
-10. Light Use Efficiency
+10. Wetland age (years)
 
-11. Wetland age (years)
+11. Salinity (ppt)
 
-12. Salinity (ppt)
+12. NO3 (mg L^-1)
 
-13. NO3 (mg L^-1)
+13. Soil organic matter (g C m^-3)
 
-14. Soil organic matter (g C m^-3)
+14. Site identifier
 
-15. Site identifier
-
-16. Modeled GPP (g C m^-2 day^-1)
+15. Modeled GPP (g C m^-2 day^-1)
 
 ## References
 

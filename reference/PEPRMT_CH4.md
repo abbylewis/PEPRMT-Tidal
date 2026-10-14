@@ -16,7 +16,11 @@ PEPRMT_CH4(
   kM_oxi_CH4 = 0.5120464 + 23,
   kI_SO4 = 486.4106939,
   kI_NO3 = 0.1020278,
-  k_plant_oxi = 0.35
+  k_plant_oxi = 0.35,
+  restart = F,
+  prev_CH4water_store = 0,
+  prev_WT_2_adj = 0,
+  GPPmax = 0
 )
 ```
 
@@ -70,6 +74,23 @@ PEPRMT_CH4(
 
   Fraction of CH4 oxidized during transport
 
+- restart:
+
+  Would you like to restart the model with a known porewater CH4 pool?
+
+- prev_CH4water_store:
+
+  If restart, starting concentration of porewater CH4
+
+- prev_WT_2_adj:
+
+  If restart, previous water level, converted to model units ((WTD_cm
+  / 100) + 1)
+
+- GPPmax:
+
+  If restart, maximum GPP across full time series
+
 ## Value
 
 Updated dataframe containing:
@@ -100,6 +121,11 @@ Updated dataframe containing:
 - trans2:
 
   fraction of methane released via plant-mediated transport (unitless)
+
+- CH4water_store:
+
+  methane pool stored in soil after emission (g C CH4 m^-3, top meter of
+  soil and water)
 
 ## Details
 
@@ -141,23 +167,21 @@ variables are used in every module.
 
 9.  FPAR flag
 
-10. Light Use Efficiency
+10. Wetland age (years)
 
-11. Wetland age (years)
+11. Salinity (ppt)
 
-12. Salinity (ppt)
+12. NO3 (mg L^-1)
 
-13. NO3 (mg L^-1)
+13. Soil organic matter (g C m^-3)
 
-14. Soil organic matter (g C m^-3)
+14. Site identifier
 
-15. Site identifier
+15. Modeled GPP (g C m^-2 day^-1)
 
-16. Modeled GPP (g C m^-2 day^-1)
+16. Modeled Reco (g C m^-2 day^-1)
 
-17. Modeled Reco (g C m^-2 day^-1)
-
-18. Net ecosystem exchange (g C m^-2 day^-1)
+17. Net ecosystem exchange (g C m^-2 day^-1)
 
 ## References
 

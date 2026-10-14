@@ -9,6 +9,7 @@ Default values were determined via MCMC Bayesian fitting (Oikawa et al.
 ``` r
 PEPRMT_GPP(
   data,
+  LUE = 0.01,
   a0 = 0.7479271,
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
@@ -23,6 +24,10 @@ PEPRMT_GPP(
 
   Data frame containing 15 required columns used as model inputs. See
   **Details** for expected column structure.
+
+- LUE:
+
+  Light use efficiency at this site
 
 - a0:
 
@@ -101,17 +106,15 @@ Oikawa et al. 2023 uses EVI from Landsat
 
 9.  FPAR flag
 
-10. Light Use Efficiency
+10. Wetland age (years)
 
-11. Wetland age (years)
+11. Salinity (ppt)
 
-12. Salinity (ppt)
+12. NO3 (mg L^-1)
 
-13. NO3 (mg L^-1)
+13. Soil organic matter (g C m^-3)
 
-14. Soil organic matter (g C m^-3)
-
-15. Site identifier
+14. Site identifier
 
 ## References
 

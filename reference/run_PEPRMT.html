@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PEPRMT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9200</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_PEPRMT</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">wetland_type</span>,</span>
+<span>  LUE <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  a0 <span class="op">=</span> <span class="fl">0.7479271</span>,</span>
 <span>  a1 <span class="op">=</span> <span class="fl">1.0497113</span>,</span>
 <span>  Ha <span class="op">=</span> <span class="fl">149.468171</span> <span class="op">+</span> <span class="fl">30</span>,</span>
@@ -61,7 +62,13 @@
 <span>  kM_oxi_CH4 <span class="op">=</span> <span class="fl">0.5120464</span> <span class="op">+</span> <span class="fl">23</span>,</span>
 <span>  kI_SO4 <span class="op">=</span> <span class="fl">486.4106939</span>,</span>
 <span>  kI_NO3 <span class="op">=</span> <span class="fl">0.1020278</span>,</span>
-<span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span></span>
+<span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span>,</span>
+<span>  restart <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>  prev_S1sol <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prev_S2sol <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prev_CH4water_store <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prev_WT_2_adj <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  GPPmax <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -77,6 +84,10 @@ See <strong>Details</strong> for expected column structure.</p></dd>
 <dt id="arg-wetland-type">wetland_type<a class="anchor" aria-label="anchor" href="#arg-wetland-type"></a></dt>
 <dd><p>Integer indicating wetland class:
 1 = Freshwater peatland, 2 = Tidal wetland.</p></dd>
+
+
+<dt id="arg-lue">LUE<a class="anchor" aria-label="anchor" href="#arg-lue"></a></dt>
+<dd><p>Light use efficiency at this site</p></dd>
 
 
 <dt id="arg-a-">a0<a class="anchor" aria-label="anchor" href="#arg-a-"></a></dt>
@@ -172,6 +183,31 @@ in CH4 module.</p></dd>
 <dd><p>Fraction of CH4 oxidized during transport. Used in CH4
 module.</p></dd>
 
+
+<dt id="arg-restart">restart<a class="anchor" aria-label="anchor" href="#arg-restart"></a></dt>
+<dd><p>Would you like to restart the model with known values?</p></dd>
+
+
+<dt id="arg-prev-s-sol">prev_S1sol<a class="anchor" aria-label="anchor" href="#arg-prev-s-sol"></a></dt>
+<dd><p>If restart, previous labile soil carbon pool</p></dd>
+
+
+<dt id="arg-prev-s-sol">prev_S2sol<a class="anchor" aria-label="anchor" href="#arg-prev-s-sol"></a></dt>
+<dd><p>If restart, previous soil organic carbon pool</p></dd>
+
+
+<dt id="arg-prev-ch-water-store">prev_CH4water_store<a class="anchor" aria-label="anchor" href="#arg-prev-ch-water-store"></a></dt>
+<dd><p>If restart, starting porewater CH4 pool</p></dd>
+
+
+<dt id="arg-prev-wt-adj">prev_WT_2_adj<a class="anchor" aria-label="anchor" href="#arg-prev-wt-adj"></a></dt>
+<dd><p>If restart, previous water level,
+converted to model units ((WT_2 / 100) + 1)</p></dd>
+
+
+<dt id="arg-gppmax">GPPmax<a class="anchor" aria-label="anchor" href="#arg-gppmax"></a></dt>
+<dd><p>If restart, maximum GPP across full time series</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -247,7 +283,6 @@ are used in every module.</p>
 <li><p>LAI: Leaf Area Index</p></li>
 <li><p>EVI: Greenness Index</p></li>
 <li><p>FPAR: FPAR flag</p></li>
-<li><p>LUE: Light Use Efficiency</p></li>
 <li><p>Wetland_age_years: Wetland age (years)</p></li>
 <li><p>Salinity_daily_ave_ppt: Salinity (ppt)</p></li>
 <li><p>NO3_mg_L: NO3 (mg L^-1)</p></li>
@@ -264,7 +299,7 @@ are used in every module.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

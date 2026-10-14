@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PEPRMT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9200</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,11 @@
 <span>  kM_oxi_CH4 <span class="op">=</span> <span class="fl">0.5120464</span> <span class="op">+</span> <span class="fl">23</span>,</span>
 <span>  kI_SO4 <span class="op">=</span> <span class="fl">486.4106939</span>,</span>
 <span>  kI_NO3 <span class="op">=</span> <span class="fl">0.1020278</span>,</span>
-<span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span></span>
+<span>  k_plant_oxi <span class="op">=</span> <span class="fl">0.35</span>,</span>
+<span>  restart <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>  prev_CH4water_store <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prev_WT_2_adj <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  GPPmax <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,6 +114,22 @@ labile carbon (kJ mol^-1)</p></dd>
 <dt id="arg-k-plant-oxi">k_plant_oxi<a class="anchor" aria-label="anchor" href="#arg-k-plant-oxi"></a></dt>
 <dd><p>Fraction of CH4 oxidized during transport</p></dd>
 
+
+<dt id="arg-restart">restart<a class="anchor" aria-label="anchor" href="#arg-restart"></a></dt>
+<dd><p>Would you like to restart the model with a known porewater CH4 pool?</p></dd>
+
+
+<dt id="arg-prev-ch-water-store">prev_CH4water_store<a class="anchor" aria-label="anchor" href="#arg-prev-ch-water-store"></a></dt>
+<dd><p>If restart, starting concentration of porewater CH4</p></dd>
+
+
+<dt id="arg-prev-wt-adj">prev_WT_2_adj<a class="anchor" aria-label="anchor" href="#arg-prev-wt-adj"></a></dt>
+<dd><p>If restart, previous water level, converted to model units ((WTD_cm / 100) + 1)</p></dd>
+
+
+<dt id="arg-gppmax">GPPmax<a class="anchor" aria-label="anchor" href="#arg-gppmax"></a></dt>
+<dd><p>If restart, maximum GPP across full time series</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -137,6 +157,10 @@ labile carbon (kJ mol^-1)</p></dd>
 <dd><p>fraction of methane released via plant-mediated transport
 (unitless)</p></dd>
 
+<dt>CH4water_store</dt>
+<dd><p>methane pool stored in soil after emission
+(g C CH4 m^-3, top meter of soil and water)</p></dd>
+
 
 </dl></div>
     <div class="section level2">
@@ -163,7 +187,6 @@ are used in every module.</p>
 <li><p>Leaf Area Index</p></li>
 <li><p>Greenness Index</p></li>
 <li><p>FPAR flag</p></li>
-<li><p>Light Use Efficiency</p></li>
 <li><p>Wetland age (years)</p></li>
 <li><p>Salinity (ppt)</p></li>
 <li><p>NO3 (mg L^-1)</p></li>
@@ -210,7 +233,7 @@ https://doi.org/10.1029/2023JG007943</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

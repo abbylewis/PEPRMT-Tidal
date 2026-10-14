@@ -8,6 +8,7 @@ Wrapper function to run all steps of the PEPRMT model (v1.0).
 run_PEPRMT(
   data,
   wetland_type,
+  LUE = 0.01,
   a0 = 0.7479271,
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
@@ -25,7 +26,13 @@ run_PEPRMT(
   kM_oxi_CH4 = 0.5120464 + 23,
   kI_SO4 = 486.4106939,
   kI_NO3 = 0.1020278,
-  k_plant_oxi = 0.35
+  k_plant_oxi = 0.35,
+  restart = F,
+  prev_S1sol = 0,
+  prev_S2sol = 0,
+  prev_CH4water_store = 0,
+  prev_WT_2_adj = 0,
+  GPPmax = 0
 )
 ```
 
@@ -40,6 +47,10 @@ run_PEPRMT(
 
   Integer indicating wetland class: 1 = Freshwater peatland, 2 = Tidal
   wetland.
+
+- LUE:
+
+  Light use efficiency at this site
 
 - a0:
 
@@ -133,6 +144,31 @@ run_PEPRMT(
 - k_plant_oxi:
 
   Fraction of CH4 oxidized during transport. Used in CH4 module.
+
+- restart:
+
+  Would you like to restart the model with known values?
+
+- prev_S1sol:
+
+  If restart, previous labile soil carbon pool
+
+- prev_S2sol:
+
+  If restart, previous soil organic carbon pool
+
+- prev_CH4water_store:
+
+  If restart, starting porewater CH4 pool
+
+- prev_WT_2_adj:
+
+  If restart, previous water level, converted to model units ((WT_2
+  / 100) + 1)
+
+- GPPmax:
+
+  If restart, maximum GPP across full time series
 
 ## Value
 
@@ -228,14 +264,12 @@ variables are used in every module.
 
 9.  FPAR: FPAR flag
 
-10. LUE: Light Use Efficiency
+10. Wetland_age_years: Wetland age (years)
 
-11. Wetland_age_years: Wetland age (years)
+11. Salinity_daily_ave_ppt: Salinity (ppt)
 
-12. Salinity_daily_ave_ppt: Salinity (ppt)
+12. NO3_mg_L: NO3 (mg L^-1)
 
-13. NO3_mg_L: NO3 (mg L^-1)
+13. SOM_MEM_gC_m3: Soil organic matter (g C m^-3)
 
-14. SOM_MEM_gC_m3: Soil organic matter (g C m^-3)
-
-15. site: Site identifier
+14. site: Site identifier

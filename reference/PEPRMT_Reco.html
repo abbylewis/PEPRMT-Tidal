@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">PEPRMT</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9100</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9200</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,10 @@
 <span>  Ea_SOM <span class="op">=</span> <span class="fl">18.41329</span>,</span>
 <span>  kM_SOM <span class="op">=</span> <span class="fl">1487.65701</span>,</span>
 <span>  Ea_labile <span class="op">=</span> <span class="fl">11.65972</span>,</span>
-<span>  kM_labile <span class="op">=</span> <span class="fl">61.29611</span></span>
+<span>  kM_labile <span class="op">=</span> <span class="fl">61.29611</span>,</span>
+<span>  restart <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>  prev_S1sol <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  prev_S2sol <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,6 +90,18 @@ of decomposition from the labile carbon pool (kJ mol^-1).</p></dd>
 the labile carbon pool (g C m^-3 soil).
 Determines substrate limitation strength for labile respiration.</p></dd>
 
+
+<dt id="arg-restart">restart<a class="anchor" aria-label="anchor" href="#arg-restart"></a></dt>
+<dd><p>Would you like to restart the model with a known SOM pool?</p></dd>
+
+
+<dt id="arg-prev-s-sol">prev_S1sol<a class="anchor" aria-label="anchor" href="#arg-prev-s-sol"></a></dt>
+<dd><p>If restart, previous labile soil carbon pool</p></dd>
+
+
+<dt id="arg-prev-s-sol">prev_S2sol<a class="anchor" aria-label="anchor" href="#arg-prev-s-sol"></a></dt>
+<dd><p>If restart, previous soil organic carbon pool</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -98,11 +113,11 @@ Determines substrate limitation strength for labile respiration.</p></dd>
 <dd><p>Net ecosystem exchange of CO2
 (g C CO2 m^-2 day^-1)</p></dd>
 
-<dt>S1</dt>
+<dt>S1sol</dt>
 <dd><p>Labile soil carbon pool
 (g C m^-3, top meter of soil)</p></dd>
 
-<dt>S2</dt>
+<dt>S2sol</dt>
 <dd><p>Soil organic carbon pool
 (g C m^-3, top meter of soil)</p></dd>
 
@@ -127,7 +142,6 @@ PEPRMT_GPP, then PEPRMT_Reco, then PEPRMT_CH4.</p>
 <li><p>Leaf Area Index</p></li>
 <li><p>Greenness Index</p></li>
 <li><p>FPAR flag</p></li>
-<li><p>Light Use Efficiency</p></li>
 <li><p>Wetland age (years)</p></li>
 <li><p>Salinity (ppt)</p></li>
 <li><p>NO3 (mg L^-1)</p></li>
@@ -170,7 +184,7 @@ e2023JG007943. https://doi.org/10.1029/2023JG007943</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
