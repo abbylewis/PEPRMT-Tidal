@@ -148,13 +148,9 @@ example_data_results |>
 
 Alternatively, all modules can be run in combination using run_PEPRMT().
 
-```{r}
+```{r run_all}
 # Run model using default parameters
-run_PEPRMT(example_data,
-  wetland_type = 2
-)
-
-out <- unique(example_data$site) |>
+unique(example_data$site) |>
   purrr::map_dfr(\(site) {
     run_PEPRMT(
       data = example_data |> dplyr::filter(site == !!site),

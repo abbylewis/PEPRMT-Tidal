@@ -6,7 +6,7 @@
 \usage{
 PEPRMT_GPP(
   data,
-  LUE,
+  LUE = 0.01,
   a0 = 0.7479271,
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
@@ -17,6 +17,8 @@ PEPRMT_GPP(
 \arguments{
 \item{data}{Data frame containing 15 required columns used as model inputs.
 See \strong{Details} for expected column structure.}
+
+\item{LUE}{Light use efficiency at this site}
 
 \item{a0}{Empirical intercept parameter for the fPAR scaling function
 (unitless).}
@@ -77,7 +79,6 @@ or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al.
 \item Leaf Area Index
 \item Greenness Index
 \item FPAR flag
-\item Light Use Efficiency
 \item Wetland age (years)
 \item Salinity (ppt)
 \item NO3 (mg L^-1)

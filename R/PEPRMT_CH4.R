@@ -24,7 +24,7 @@
 #' @param k_plant_oxi Fraction of CH4 oxidized during transport
 #' @param restart Would you like to restart the model with a known porewater CH4 pool?
 #' @param prev_CH4water_store If restart, starting concentration of porewater CH4
-#' @param prev_WT_2_adj If restart, previous water level, converted to model units ((WT_2 / 100) + 1)
+#' @param prev_WT_2_adj If restart, previous water level, converted to model units ((WTD_cm / 100) + 1)
 #' @param GPPmax If restart, maximum GPP across full time series
 #'
 #' @description

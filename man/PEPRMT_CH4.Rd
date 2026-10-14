@@ -56,7 +56,7 @@ labile carbon (kJ mol^-1)}
 
 \item{prev_CH4water_store}{If restart, starting concentration of porewater CH4}
 
-\item{prev_WT_2_adj}{If restart, previous water level, converted to model units ((WT_2 / 100) + 1)}
+\item{prev_WT_2_adj}{If restart, previous water level, converted to model units ((WTD_cm / 100) + 1)}
 
 \item{GPPmax}{If restart, maximum GPP across full time series}
 }

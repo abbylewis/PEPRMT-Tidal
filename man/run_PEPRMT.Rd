@@ -7,7 +7,7 @@
 run_PEPRMT(
   data,
   wetland_type,
-  LUE,
+  LUE = 0.01,
   a0 = 0.7479271,
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
