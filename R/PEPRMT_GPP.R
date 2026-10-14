@@ -86,7 +86,7 @@
 #' # data(example_dataset)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
 PEPRMT_GPP <- function(data,
-                       LUE,
+                       LUE = 0.01,
                        a0 = 0.7479271,
                        a1 = 1.0497113,
                        Ha = 149.4681710 + 30,
