@@ -166,7 +166,7 @@ out <- unique(example_data$site) |>
 
 Check if CH4 model restart works
 
-```{r ch4}
+```{r restart}
 # Isolate one site
 data_edn <- example_data |> 
   dplyr::filter(site == "US_EDN")

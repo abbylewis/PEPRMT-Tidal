@@ -5,6 +5,7 @@
 #'
 #' @param data Data frame containing 15 required columns used as model inputs.
 #'   See **Details** for expected column structure.
+#' @param LUE Light use efficiency at this site
 #' @param a0 Empirical intercept parameter for the fPAR scaling function 
 #'   (unitless).
 #' @param a1  Empirical slope parameter for the fPAR scaling function
@@ -47,12 +48,11 @@
 #' 7. Leaf Area Index
 #' 8. Greenness Index
 #' 9. FPAR flag
-#' 10. Light Use Efficiency
-#' 11. Wetland age (years)
-#' 12. Salinity (ppt)
-#' 13. NO3 (mg L^-1)
-#' 14. Soil organic matter (g C m^-3)
-#' 15. Site identifier
+#' 10. Wetland age (years)
+#' 11. Salinity (ppt)
+#' 12. NO3 (mg L^-1)
+#' 13. Soil organic matter (g C m^-3)
+#' 14. Site identifier
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
