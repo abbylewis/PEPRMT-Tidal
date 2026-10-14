@@ -7,6 +7,7 @@
 run_PEPRMT(
   data,
   wetland_type,
+  LUE,
   a0 = 0.7479271,
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
@@ -24,7 +25,13 @@ run_PEPRMT(
   kM_oxi_CH4 = 0.5120464 + 23,
   kI_SO4 = 486.4106939,
   kI_NO3 = 0.1020278,
-  k_plant_oxi = 0.35
+  k_plant_oxi = 0.35,
+  restart = F,
+  prev_S1sol = 0,
+  prev_S2sol = 0,
+  prev_CH4water_store = 0,
+  prev_WT_2_adj = 0,
+  GPPmax = 0
 )
 }
 \arguments{
@@ -33,6 +40,8 @@ See \strong{Details} for expected column structure.}
 
 \item{wetland_type}{Integer indicating wetland class:
 1 = Freshwater peatland, 2 = Tidal wetland.}
+
+\item{LUE}{Light use efficiency at this site}
 
 \item{a0}{Empirical intercept parameter for the fPAR scaling function
 (unitless). Used in GPP module.}
@@ -91,6 +100,19 @@ in CH4 module.}
 
 \item{k_plant_oxi}{Fraction of CH4 oxidized during transport. Used in CH4
 module.}
+
+\item{restart}{Would you like to restart the model with known values?}
+
+\item{prev_S1sol}{If restart, previous labile soil carbon pool}
+
+\item{prev_S2sol}{If restart, previous soil organic carbon pool}
+
+\item{prev_CH4water_store}{If restart, starting porewater CH4 pool}
+
+\item{prev_WT_2_adj}{If restart, previous water level,
+converted to model units ((WT_2 / 100) + 1)}
+
+\item{GPPmax}{If restart, maximum GPP across full time series}
 }
 \value{
 Updated dataframe containing:
@@ -152,7 +174,6 @@ are used in every module.
 \item LAI: Leaf Area Index
 \item EVI: Greenness Index
 \item FPAR: FPAR flag
-\item LUE: Light Use Efficiency
 \item Wetland_age_years: Wetland age (years)
 \item Salinity_daily_ave_ppt: Salinity (ppt)
 \item NO3_mg_L: NO3 (mg L^-1)

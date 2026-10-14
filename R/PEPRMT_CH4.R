@@ -22,6 +22,10 @@
 #' @param kI_SO4 – Sulfate inhibition constant (mg L^-1)
 #' @param kI_NO3 – Nitrate inhibition constant (mg L^-1)
 #' @param k_plant_oxi Fraction of CH4 oxidized during transport
+#' @param restart Would you like to restart the model with a known porewater CH4 pool?
+#' @param prev_CH4water_store If restart, starting concentration of porewater CH4
+#' @param prev_WT_2_adj If restart, previous water level, converted to model units ((WT_2 / 100) + 1)
+#' @param GPPmax If restart, maximum GPP across full time series
 #'
 #' @description
 #' Methane production and transport module of the PEPRMT model (v1.0).
@@ -51,15 +55,14 @@
 #' 7. Leaf Area Index
 #' 8. Greenness Index
 #' 9. FPAR flag
-#' 10. Light Use Efficiency
-#' 11. Wetland age (years)
-#' 12. Salinity (ppt)
-#' 13. NO3 (mg L^-1)
-#' 14. Soil organic matter (g C m^-3)
-#' 15. Site identifier
-#' 16. Modeled GPP (g C m^-2 day^-1)
-#' 17. Modeled Reco (g C m^-2 day^-1)
-#' 18. Net ecosystem exchange (g C m^-2 day^-1)
+#' 10. Wetland age (years)
+#' 11. Salinity (ppt)
+#' 12. NO3 (mg L^-1)
+#' 13. Soil organic matter (g C m^-3)
+#' 14. Site identifier
+#' 15. Modeled GPP (g C m^-2 day^-1)
+#' 16. Modeled Reco (g C m^-2 day^-1)
+#' 17. Net ecosystem exchange (g C m^-2 day^-1)
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
@@ -75,6 +78,8 @@
 #'     (g C CH4 m^-3, top meter of soil and water)}
 #'   \item{trans2}{fraction of methane released via plant-mediated transport
 #'     (unitless)}
+#'   \item{CH4water_store}{methane pool stored in soil after emission
+#'     (g C CH4 m^-3, top meter of soil and water)}
 #' }
 #'
 #' @references
@@ -113,7 +118,11 @@ PEPRMT_CH4 <- function(data,
                        kM_oxi_CH4 = 0.5120464 + 23, # Half-saturation constant for CH4 oxidation (gC m-3 soil)
                        kI_SO4 = 486.4106939, # Sulfate inhibition factor (mg L-1)
                        kI_NO3 = 0.1020278, # Nitrate inhibition factor  (mg L-1)
-                       k_plant_oxi = 0.35 # percent oxidized during transport
+                       k_plant_oxi = 0.35, # percent oxidized during transport
+                       restart = F,
+                       prev_CH4water_store = 0,
+                       prev_WT_2_adj = 0, # (WT_2 / 100) + 1
+                       GPPmax = 0
                        ) {
   # -------------------------
   # Check data structure
@@ -122,7 +131,7 @@ PEPRMT_CH4 <- function(data,
   data <- data.frame(data)
   expected_colnames <- c(
     "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
-    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "Wetland_age_years",
     "Salinity_daily_ave_ppt", "NO3_mg_L", "SOM_MEM_gC_m3", "site",
     "GPP_mod", "SOM_total", "SOM_labile"
   )
@@ -135,6 +144,12 @@ PEPRMT_CH4 <- function(data,
       )
     ))
   }
+  
+  if (length(unique(data$site)) > 1) {
+    stop(paste0(
+      "PEPRMT-Tidal no longer supports running multiple sites at once"
+    ))
+  }
 
   # -------------------------
   # Check parameters
@@ -145,7 +160,7 @@ PEPRMT_CH4 <- function(data,
   # -------------------------
   # Check wetland_type
   # -------------------------
-
+  
   if (!is.numeric(wetland_type) || length(wetland_type) != 1 ||
     !wetland_type %in% c(1, 2)) {
     stop("wetland_type must be a single numeric value: 1 (Freshwater peatland) or 2 (Tidal wetland).",
@@ -205,7 +220,6 @@ PEPRMT_CH4 <- function(data,
     LAI_2 <- d$LAI # Leaf area index (if not using can be 0s or NaN)
     GI_2 <- d$EVI # greeness index from Phenocam (GCC) or Landsat EVI etc (unitless)
     FPAR <- d$FPAR # If using LAI data, set FPAR variable to 1's, if using a greenness index set FPAR to 0's
-    LUE <- d$LUE # growing season LUE computed for each site using measured GPP in gC per umol
     wetland_age_2 <- d$Wetland_age_years # Age of wetland in years
     Sal <- d$Salinity_daily_ave_ppt # Salinity (ppt)
     NO3 <- d$NO3_mg_L # Dissolved NO3 (mg/L)
@@ -218,7 +232,9 @@ PEPRMT_CH4 <- function(data,
     S2_2 <- d$SOM_labile # Modeled labile C pool - use output from PEPRMT Reco model -cumulative grams C m-3
 
     WT_2_adj <- (WT_2 / 100) + 1
-    GPPmax <- max(GPP_2 * -1)
+    
+    # This logic is built in to enable hop tests
+    if(GPPmax == 0){GPPmax <- max(GPP_2 * -1)}
 
     # Time Invariant
     RT <- R * (TA_2 + 274.15) # T in Kelvin-all units cancel out
@@ -351,97 +367,70 @@ PEPRMT_CH4 <- function(data,
       }
 
       # now start ch4 transport loop
-      if (t == 1) {
-        # WT_2_adj = 1 at soil surface
-        if (WT_2_adj[t] > 1) {
-          # Methane oxidation is zero when WT above surface
-          R_Oxi[t] <- 0
-          Oxi_full[t] <- 0
-
-          # This assumes you start out the year with no CH4 in water
-          # where CH4water_0 is the initial concentration of CH4 in water
-          CH4water_0[t] <- 0 #
-          CH4water_0_2[t] <- 0 # CH4 produced in previous time step
-          # Only modeling CH4 dissolved in the water that goes down 1 m3 into soil
-          CH4water[t] <- ((M_full[t] * 1) + (CH4water_0[t] * WT_2_adj[t])) / WT_2_adj[t] # gC per m^3 - concentration in water doesn't change
-
-          # based on the concentrations in the soil and water, calculate hydro and plant-mediated fluxes
-          Hydro_flux[t] <- k * CH4water[t] # gC CH4 m-2 day-1  Hydrodynamic flux
-          Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] ## gC CH4 m-2 day-1  Bulk Plant mediated transport
-          Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi ## gC CH4 m-2 day-1  Plant mediated transport after oxidation
-
-          # subtract the moles of methane lost from the pools (soil and water) to the atm
-          CH4water_store[t] <- M_full[t] - Hydro_flux[t] - Plant_flux[t] # gC CH4 m-3 stored in the system
-
-          # If you start out the year with no water above the surface
-        } else {
-          # Gives CH4 concentration in water which is now less that 1 m3
-          CH4water_0[t] <- (M_full[t] * 1) + (0.00001 * WT_2_adj[t]) / WT_2_adj[t] # gC CH4 m-3 - concentration in soil and water are the same
-
-          # Methane oxidation turns on when WT falls below the surface
-          R_Oxi[t] <- M_Vmax3[t] * CH4water_0[t] / (M_km3 + CH4water_0[t]) # gC CH4 m-3 Reaction velocity
-          Oxi_full[t] <- R_Oxi[t] # gC m-3 d-1
-          CH4water[t] <- CH4water_0[t] - Oxi_full[t]
-          if (CH4water[t] < 0) {
-            CH4water[t] <- 0
+      # WT_2_adj = 1 at soil surface
+      if (WT_2_adj[t] > 1) {
+        # Methane oxidation is zero when WT above surface
+        R_Oxi[t] <- 0
+        Oxi_full[t] <- 0
+        
+        CH4water_0_2[t] <- 0 # CH4water_0_2 is an intermediate state that is not used when WT > 1
+        if(t == 1) {
+          if(restart){
+            # account for any changes in concentration of CH4 due to any change in WT_2_adj height
+            CH4water_0[t] <- (prev_CH4water_store * prev_WT_2_adj) / WT_2_adj[t]
+          } else {
+            # If no restart value is provided, we assume you start out the year with no CH4 in water
+            CH4water_0[t] <- 0 # initial concentration of CH4 in water
           }
-
-          CH4water_0_2[t] <- 0
-
-          # this hydroflux uses a 2nd k parameter which basically inhibits
-          # diffusive flux when there is no water above the soil surface
-          Hydro_flux[t] <- k * CH4water[t] # gC m-3 d-1 Hydrodynamic flux
-          Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] # gC m-3 d-1 Bulk Plant mediated transport
-          Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
-
-          CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
-        }
-
-        # If you have water, then the CH4 should mix between the 2 layers and concentrations should be the same in water and soil
-      } else {
-        if (WT_2_adj[t] > 1) {
+        } else {
           # account for any changes in concentration of CH4 due to any change in WT_2_adj height
           CH4water_0[t] <- (CH4water_store[t - 1] * WT_2_adj[t - 1]) / WT_2_adj[t]
-
-          # Methane oxidation is zero when WT above surface
-          R_Oxi[t] <- 0
-          Oxi_full[t] <- 0
-          CH4water_0_2[t] <- 0
-          # Now add the new CH4 produced today to the soil and let it increase in concentration
-          CH4water[t] <- ((M_full[t] * 1) + (CH4water_0[t] * WT_2_adj[t])) / WT_2_adj[t] # gC m-3 - concentration in water doesn't change
-
-          # again compute fluxes
-          Hydro_flux[t] <- k * CH4water[t] # gC m-3 d-1 Hydrodynamic flux
-          Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] # gC m-3 d-1 Plant mediated transport
-          Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
-
-          # subtract the moles of methane lost from the pools (soil and #water) to the atm
-          CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
-        } else {
-          # if you don't have WT_2_adj above the soil, then all the CH4 in the water goes to the soil
+        }
+        # Now add the new CH4 produced today to the soil and let it increase in concentration
+        # Only modeling CH4 dissolved in the water that goes down 1 m3 into soil
+        CH4water[t] <- ((M_full[t] * 1) + (CH4water_0[t] * WT_2_adj[t])) / WT_2_adj[t] # gC per m^3 - concentration in water doesn't change
+        
+        # based on the concentrations in the soil and water, calculate hydro and plant-mediated fluxes
+        Hydro_flux[t] <- k * CH4water[t] # gC CH4 m-2 day-1  Hydrodynamic flux
+        Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] ## gC CH4 m-2 day-1  Bulk Plant mediated transport
+        Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi ## gC CH4 m-2 day-1  Plant mediated transport after oxidation
+        
+        # subtract the moles of methane lost from the pools (soil and water) to the atm
+        CH4water_store[t] <- M_full[t] - Hydro_flux[t] - Plant_flux[t] # gC CH4 m-3 stored in the system
+        
+        # If you start out the year with no water above the surface
+      } else {
+        # if you don't have WT_2_adj above the soil, then all the CH4 in the water goes to the soil
+        if (t == 1) {
+          if(restart){
+            # First, account for increased concentration of CH4 in soil now that WT_2_adj has dropped
+            CH4water_0[t] <- (prev_CH4water_store * prev_WT_2_adj) / WT_2_adj[t]
+          } else {
+            CH4water_0[t] <- 0.00001 # Set to very small number
+          }
+        } else{
           # First, account for increased concentration of CH4 in soil now that WT_2_adj has dropped
           CH4water_0[t] <- (CH4water_store[t - 1] * WT_2_adj[t - 1]) / WT_2_adj[t]
-
-          # now add new CH4 to this new concentrated pool of CH4 in the soil
-          CH4water_0_2[t] <- ((M_full[t] * 1) + (CH4water_0[t] * WT_2_adj[t])) / WT_2_adj[t] # gc per m^3 - concentration in water doesn't change
-
-          # Methane oxidation turns on when WT falls below the surface
-          R_Oxi[t] <- M_Vmax3[t] * CH4water_0_2[t] / (M_km3 + CH4water_0_2[t]) # gC m2 d Reaction velocity
-          Oxi_full[t] <- R_Oxi[t] # gC m-3 day-1
-          CH4water[t] <- CH4water_0_2[t] - Oxi_full[t] # now you have less ch4
-          if (CH4water[t] < 0) {
-            CH4water[t] <- 0
-          }
-
-
-          Hydro_flux[t] <- k * CH4water[t] # gC m-3 d-1 Hydrodynamic flux
-          Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] # gC m-3 d-1 Plant mediated transport
-          Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
-
-          CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
         }
+        
+        # now add new CH4 to this new concentrated pool of CH4 in the soil
+        CH4water_0_2[t] <- ((M_full[t] * 1) + (CH4water_0[t] * WT_2_adj[t])) / WT_2_adj[t] # gc per m^3 - concentration in water doesn't change
+        
+        # Methane oxidation turns on when WT falls below the surface
+        R_Oxi[t] <- M_Vmax3[t] * CH4water_0_2[t] / (M_km3 + CH4water_0_2[t]) # gC m2 d Reaction velocity
+        Oxi_full[t] <- R_Oxi[t] # gC m-3 day-1
+        CH4water[t] <- CH4water_0_2[t] - Oxi_full[t] # now you have less ch4
+        if (CH4water[t] < 0) {
+          CH4water[t] <- 0
+        }
+        
+        Hydro_flux[t] <- k * CH4water[t] # gC m-3 d-1 Hydrodynamic flux
+        Plant_flux[t] <- (Vtrans * CH4water[t]) * trans2[t] # gC m-3 d-1 Plant mediated transport
+        Plant_flux_net[t] <- Plant_flux[t] * k_plant_oxi # gC m-3 d-1 Plant mediated transport after oxidation
+        
+        CH4water_store[t] <- M_full[t] - Plant_flux[t] - Hydro_flux[t] # gC m-3 stored in the system
       }
-    }
+    } 
 
     CH4_mod <- Plant_flux_net + Hydro_flux # gC CH4 m-2 day-1 total CH4 flux to atm
 
@@ -453,7 +442,8 @@ PEPRMT_CH4 <- function(data,
       M2,
       trans2,
       DOY,
-      site
+      site,
+      CH4water_store
     )
 
     # store d in a vector

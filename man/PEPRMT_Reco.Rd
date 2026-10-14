@@ -10,7 +10,10 @@ PEPRMT_Reco(
   Ea_SOM = 18.41329,
   kM_SOM = 1487.65701,
   Ea_labile = 11.65972,
-  kM_labile = 61.29611
+  kM_labile = 61.29611,
+  restart = F,
+  prev_S1sol = 0,
+  prev_S2sol = 0
 )
 }
 \arguments{
@@ -34,6 +37,12 @@ of decomposition from the labile carbon pool (kJ mol^-1).}
 \item{kM_labile}{– Half-saturation constant for microbial decomposition of
 the labile carbon pool (g C m^-3 soil).
 Determines substrate limitation strength for labile respiration.}
+
+\item{restart}{Would you like to restart the model with a known SOM pool?}
+
+\item{prev_S1sol}{If restart, previous labile soil carbon pool}
+
+\item{prev_S2sol}{If restart, previous soil organic carbon pool}
 }
 \value{
 Updated dataframe containing:
@@ -42,9 +51,9 @@ Updated dataframe containing:
 (g C CO2 m^-2 day^-1)}
 \item{NEE_mod}{Net ecosystem exchange of CO2
 (g C CO2 m^-2 day^-1)}
-\item{S1}{Labile soil carbon pool
+\item{S1sol}{Labile soil carbon pool
 (g C m^-3, top meter of soil)}
-\item{S2}{Soil organic carbon pool
+\item{S2sol}{Soil organic carbon pool
 (g C m^-3, top meter of soil)}
 }
 }
@@ -75,7 +84,6 @@ All variables are expected at a daily time step.
 \item Leaf Area Index
 \item Greenness Index
 \item FPAR flag
-\item Light Use Efficiency
 \item Wetland age (years)
 \item Salinity (ppt)
 \item NO3 (mg L^-1)

@@ -6,6 +6,7 @@
 #'   See **Details** for expected column structure.
 #' @param wetland_type Integer indicating wetland class:
 #'   1 = Freshwater peatland, 2 = Tidal wetland.
+#' @param LUE Light use efficiency at this site
 #' @param a0 Empirical intercept parameter for the fPAR scaling function 
 #'   (unitless). Used in GPP module.
 #' @param a1 Empirical slope parameter for the fPAR scaling function
@@ -46,6 +47,13 @@
 #' @param kI_NO3 Nitrate inhibition constant (mg L^-1). Used in CH4 module.
 #' @param k_plant_oxi Fraction of CH4 oxidized during transport. Used in CH4 
 #'   module.
+#' @param restart Would you like to restart the model with known values?
+#' @param prev_S1sol If restart, previous labile soil carbon pool
+#' @param prev_S2sol If restart, previous soil organic carbon pool
+#' @param prev_CH4water_store If restart, starting porewater CH4 pool
+#' @param prev_WT_2_adj If restart, previous water level, 
+#'   converted to model units ((WT_2 / 100) + 1)
+#' @param GPPmax If restart, maximum GPP across full time series
 #'
 #' @description
 #' Wrapper function to run all steps of the PEPRMT model (v1.0).
@@ -75,12 +83,11 @@
 #' 7. LAI: Leaf Area Index
 #' 8. EVI: Greenness Index
 #' 9. FPAR: FPAR flag
-#' 10. LUE: Light Use Efficiency
-#' 11. Wetland_age_years: Wetland age (years)
-#' 12. Salinity_daily_ave_ppt: Salinity (ppt)
-#' 13. NO3_mg_L: NO3 (mg L^-1)
-#' 14. SOM_MEM_gC_m3: Soil organic matter (g C m^-3)
-#' 15. site: Site identifier
+#' 10. Wetland_age_years: Wetland age (years)
+#' 11. Salinity_daily_ave_ppt: Salinity (ppt)
+#' 12. NO3_mg_L: NO3 (mg L^-1)
+#' 13. SOM_MEM_gC_m3: Soil organic matter (g C m^-3)
+#' 14. site: Site identifier
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
@@ -113,6 +120,7 @@
 #'
 run_PEPRMT <- function(data,
                        wetland_type,
+                       LUE,
                        a0 = 0.7479271,
                        a1 = 1.0497113,
                        Ha = 149.4681710 + 30,
@@ -130,7 +138,13 @@ run_PEPRMT <- function(data,
                        kM_oxi_CH4 = 0.5120464 + 23, # Half-saturation constant for CH4 oxidation (gC m-3 soil)
                        kI_SO4 = 486.4106939, # Sulfate inhibition factor (mg L-1)
                        kI_NO3 = 0.1020278, # Nitrate inhibition factor  (mg L-1)
-                       k_plant_oxi = 0.35 # percent oxidized during transport
+                       k_plant_oxi = 0.35, # percent oxidized during transport
+                       restart = F,
+                       prev_S1sol = 0,
+                       prev_S2sol = 0,
+                       prev_CH4water_store = 0,
+                       prev_WT_2_adj = 0, # (WT_2 / 100) + 1
+                       GPPmax = 0
                        ) {
   # -------------------------
   # Check data structure
@@ -139,7 +153,7 @@ run_PEPRMT <- function(data,
   data <- data.frame(data)
   expected_colnames <- c(
     "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
-    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "Wetland_age_years",
     "Salinity_daily_ave_ppt", "NO3_mg_L",
     "SOM_MEM_gC_m3", "site"
   )
@@ -150,6 +164,12 @@ run_PEPRMT <- function(data,
       paste(expected_colnames[!expected_colnames %in% colnames(data)],
         collapse = ", "
       )
+    ))
+  }
+  
+  if (length(unique(data$site)) > 1) {
+    stop(paste0(
+      "PEPRMT-Tidal no longer supports running multiple sites at once"
     ))
   }
 
@@ -177,6 +197,7 @@ run_PEPRMT <- function(data,
   # GPP
 
   GPP_mod_data <- PEPRMT_GPP(data = data, 
+                             LUE = LUE,
                              a0 = a0,
                              a1 = a1,
                              Ha = Ha,
@@ -201,7 +222,10 @@ run_PEPRMT <- function(data,
     kM_SOM = kM_SOM,
     Ea_labile = Ea_labile,
     kM_labile = kM_labile,
-    wetland_type = wetland_type
+    wetland_type = wetland_type,
+    restart = restart,
+    prev_S1sol = prev_S1sol,
+    prev_S2sol = prev_S2sol
   )
 
   # Add model results
@@ -228,7 +252,11 @@ run_PEPRMT <- function(data,
     kI_SO4 = kI_SO4,
     kI_NO3 = kI_NO3,
     k_plant_oxi = k_plant_oxi,
-    wetland_type = wetland_type
+    wetland_type = wetland_type,
+    restart = restart,
+    prev_CH4water_store = prev_CH4water_store,
+    prev_WT_2_adj = prev_WT_2_adj,
+    GPPmax = GPPmax
   )
 
   # Add model results

@@ -35,9 +35,14 @@ First, run GPP Module
 
 ```{r gpp}
 # Run model using default parameters
-GPP_mod <- PEPRMT_GPP(
-  data = example_data
-)
+GPP_mod <- 
+  unique(example_data$site) |>
+  purrr::map_dfr(\(site) {
+    PEPRMT_GPP(
+      data = example_data |> dplyr::filter(site == !!site),
+      LUE = unique(example_data$LUE[example_data$site == site])
+    )
+  })
 
 # Create a new dataset that includes model results
 example_data_results <- example_data
@@ -68,10 +73,13 @@ Second, run Reco Module
 
 ```{r reco}
 # Run model using default parameters
-Reco_mod <- PEPRMT_Reco(
-  data = example_data_results,
-  wetland_type = 2
-)
+Reco_mod <- unique(example_data_results$site) |>
+  purrr::map_dfr(\(site) {
+    PEPRMT_Reco(
+      data = example_data_results |> dplyr::filter(site == !!site),
+      wetland_type = 2
+    )
+  })
 
 # Create a new dataset that includes model results
 example_data_results$Reco_mod <- Reco_mod$Reco_mod
@@ -105,10 +113,13 @@ example_data_results$SOM_total <- Reco_mod$S1
 example_data_results$SOM_labile <- Reco_mod$S2
 
 # Run model using default parameters
-CH4_mod <- PEPRMT_CH4(
-  data = example_data_results,
-  wetland_type = 2
-)
+CH4_mod <- unique(example_data_results$site) |>
+  purrr::map_dfr(\(site) {
+    PEPRMT_CH4(
+      data = example_data_results |> dplyr::filter(site == !!site),
+      wetland_type = 2
+    )
+  })
 
 # Create a new dataset that includes model results
 example_data_results$CH4_mod <- CH4_mod$CH4_mod
@@ -119,8 +130,8 @@ example_data_results |>
   geom_line(aes(x = DOY, y = CH4_mod * 1000, color = "Modeled")) +
   geom_line(aes(x = DOY, y = CH4_gC_m2_day * 1000, color = "Observed")) +
   scale_color_manual(
-    breaks = c("Observed", "Modeled"),
-    values = c("black", "red")
+    breaks = c("Observed", "Modeled", "Modeled2"),
+    values = c("black", "red", "blue")
   ) +
   labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
   theme_bw(base_size = 12) +
@@ -142,5 +153,73 @@ Alternatively, all modules can be run in combination using run_PEPRMT().
 run_PEPRMT(example_data,
   wetland_type = 2
 )
+
+out <- unique(example_data$site) |>
+  purrr::map_dfr(\(site) {
+    run_PEPRMT(
+      data = example_data |> dplyr::filter(site == !!site),
+      LUE = unique(example_data$LUE[example_data$site == site]),
+      wetland_type = 2
+    )
+  })
+```
+
+Check if CH4 model restart works
+
+```{r ch4}
+# Isolate one site
+data_edn <- example_data |> 
+  dplyr::filter(site == "US_EDN")
+
+# Run model
+full_run <- run_PEPRMT(
+  data_edn,
+  LUE = unique(data_edn$LUE),
+  wetland_type = 2,
+  GPPmax = 4
+)
+
+# Restart model
+
+restarted_run <- run_PEPRMT(
+  data = data_edn[501:nrow(data_edn),],
+  wetland_type = 2,
+  LUE = unique(data_edn$LUE),
+  restart = T,
+  prev_S1sol = full_run$S1sol[500],
+  prev_S2sol = full_run$S2sol[500],
+  prev_CH4water_store = full_run$CH4water_store[500],
+  prev_WT_2_adj = (full_run$WTD_cm[500] / 100) + 1,
+  GPPmax = 4
+)
+
+comb <- full_run |>
+  dplyr::left_join(restarted_run |>
+              dplyr::select(DOY, CH4_mod, CH4water_store, S1sol, S2sol) |>
+              dplyr::rename(CH4_restart = CH4_mod,
+                            pore_restart = CH4water_store,
+                            S1sol_restart = S1sol,
+                            S2sol_restart = S2sol))
+
+# Plot
+comb |>
+  ggplot(aes(DOY)) +
+  geom_line(aes(x = DOY, y = CH4_mod * 1000, color = "Original")) +
+  geom_line(aes(x = DOY, y = CH4_restart * 1000, color = "Restart")) +
+  scale_color_manual(
+    breaks = c("Original", "Restart"),
+    values = c("black", "red")
+  ) +
+  labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
+  theme_bw(base_size = 12) +
+  theme(
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "black"),
+    panel.background = element_blank(),
+    legend.position = "center"
+  ) +
+  facet_wrap(~site, ncol = 1, scales = "free")
 ```
 

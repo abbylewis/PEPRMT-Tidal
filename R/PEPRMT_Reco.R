@@ -18,6 +18,9 @@
 #' @param kM_labile – Half-saturation constant for microbial decomposition of
 #'   the labile carbon pool (g C m^-3 soil).
 #'   Determines substrate limitation strength for labile respiration.
+#' @param restart Would you like to restart the model with a known SOM pool?
+#' @param prev_S1sol If restart, previous labile soil carbon pool
+#' @param prev_S2sol If restart, previous soil organic carbon pool
 #'   
 #' @description
 #' Ecosystem respiration (Reco) module of the PEPRMT model (v1.0).
@@ -42,13 +45,12 @@
 #' 7. Leaf Area Index
 #' 8. Greenness Index
 #' 9. FPAR flag
-#' 10. Light Use Efficiency
-#' 11. Wetland age (years)
-#' 12. Salinity (ppt)
-#' 13. NO3 (mg L^-1)
-#' 14. Soil organic matter (g C m^-3)
-#' 15. Site identifier
-#' 16. Modeled GPP (g C m^-2 day^-1)
+#' 10. Wetland age (years)
+#' 11. Salinity (ppt)
+#' 12. NO3 (mg L^-1)
+#' 13. Soil organic matter (g C m^-3)
+#' 14. Site identifier
+#' 15. Modeled GPP (g C m^-2 day^-1)
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
@@ -56,9 +58,9 @@
 #'     (g C CO2 m^-2 day^-1)}
 #'   \item{NEE_mod}{Net ecosystem exchange of CO2
 #'     (g C CO2 m^-2 day^-1)}
-#'   \item{S1}{Labile soil carbon pool
+#'   \item{S1sol}{Labile soil carbon pool
 #'     (g C m^-3, top meter of soil)}
-#'   \item{S2}{Soil organic carbon pool
+#'   \item{S2sol}{Soil organic carbon pool
 #'     (g C m^-3, top meter of soil)}
 #' }
 #'
@@ -91,7 +93,10 @@ PEPRMT_Reco <- function(data,
                         Ea_SOM = 18.41329,
                         kM_SOM = 1487.65701,
                         Ea_labile = 11.65972,
-                        kM_labile = 61.29611) {
+                        kM_labile = 61.29611,
+                        restart = F,
+                        prev_S1sol = 0,
+                        prev_S2sol = 0) {
   # -------------------------
   # Check data structure
   # -------------------------
@@ -99,10 +104,16 @@ PEPRMT_Reco <- function(data,
   data <- data.frame(data)
   expected_colnames <- c(
     "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
-    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "Wetland_age_years",
     "Salinity_daily_ave_ppt", "NO3_mg_L",
     "SOM_MEM_gC_m3", "site", "GPP_mod"
   )
+  
+  if (length(unique(data$site)) > 1) {
+    stop(paste0(
+      "PEPRMT-Tidal no longer supports running multiple sites at once"
+    ))
+  }
 
   if (!all(expected_colnames %in% colnames(data))) {
     stop(paste0(
@@ -169,7 +180,6 @@ PEPRMT_Reco <- function(data,
     LAI_2 <- d$LAI # Leaf area index (if not using can be 0s or NaN)
     GI_2 <- d$EVI # greeness index from Phenocam (GCC) or Landsat EVI etc (unitless)
     FPAR <- d$FPAR # If using LAI data, set FPAR variable to 1's, if using a greenness index set FPAR to 0's
-    LUE <- d$LUE # growing season LUE computed for each site using measured GPP in gC per umol
     wetland_age_2 <- d$Wetland_age_years # Age of wetland in years
     Sal <- d$Salinity_daily_ave_ppt # Salinity (ppt)
     NO3 <- d$NO3_mg_L # Dissolved NO3 (mg/L)
@@ -215,8 +225,13 @@ PEPRMT_Reco <- function(data,
 
       # if (t == 1 | site_change[t]>0 #if beginning of model or switch sites, start C1 pool over
       if (t == 1) {
-        S1[t] <- C1_init[t] # substrate avail NOT affected by water avail-- SOM pool
-        S2[t] <- C2_init + C2in[t] # Ps C pool-- some initial Ps C lingering in soil + day 1 GPPavail
+        if(restart){
+          S1[t] <- prev_S1sol
+          S2[t] <- prev_S2sol + C2in[t] # substrate availability based on Ps on time step previous
+        } else {
+          S1[t] <- C1_init[t] # substrate avail NOT affected by water avail-- SOM pool
+          S2[t] <- C2_init + C2in[t] # Ps C pool-- some initial Ps C lingering in soil + day 1 GPPavail
+        }
       } else {
         S1[t] <- S1sol[t - 1] + C1_init[t]
         S2[t] <- S2sol[t - 1] + C2in[t] # substrate availability based on Ps on time step previous
@@ -282,13 +297,8 @@ PEPRMT_Reco <- function(data,
       R1[t] <- R1[t] * percent_enhancement[t] # umol m2 sec Reaction velocity
       R2[t] <- R2[t] * percent_enhancement[t] # umol m2 sec
 
-      if (t == 1) {
-        S1sol[t] <- C1_init[t] - (R1[t]) # accounts for depletion of C sources in soil due to Reco and methane production
-        S2sol[t] <- (C2_init + C2in[t]) - (R2[t])
-      } else {
-        S1sol[t] <- S1[t] - R1[t]
-        S2sol[t] <- S2[t] - R2[t]
-      }
+      S1sol[t] <- S1[t] - R1[t]
+      S2sol[t] <- S2[t] - R2[t]
 
       if (S1sol[t] < 0) {
         S1sol[t] <- 0
@@ -317,7 +327,7 @@ PEPRMT_Reco <- function(data,
 
     NEE_mod <- GPP_2 + Reco_1 # umol m-2 d-1
 
-    w <- data.frame(Reco_mod, NEE_mod, S1, S2, DOY, site)
+    w <- data.frame(Reco_mod, NEE_mod, S1, S2, S1sol, S2sol, DOY, site)
     # store d in a vector
     outcome_lst[[i]] <- (w)
   }

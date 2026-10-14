@@ -15,7 +15,11 @@ PEPRMT_CH4(
   kM_oxi_CH4 = 0.5120464 + 23,
   kI_SO4 = 486.4106939,
   kI_NO3 = 0.1020278,
-  k_plant_oxi = 0.35
+  k_plant_oxi = 0.35,
+  restart = F,
+  prev_CH4water_store = 0,
+  prev_WT_2_adj = 0,
+  GPPmax = 0
 )
 }
 \arguments{
@@ -47,6 +51,14 @@ labile carbon (kJ mol^-1)}
 \item{kI_NO3}{– Nitrate inhibition constant (mg L^-1)}
 
 \item{k_plant_oxi}{Fraction of CH4 oxidized during transport}
+
+\item{restart}{Would you like to restart the model with a known porewater CH4 pool?}
+
+\item{prev_CH4water_store}{If restart, starting concentration of porewater CH4}
+
+\item{prev_WT_2_adj}{If restart, previous water level, converted to model units ((WT_2 / 100) + 1)}
+
+\item{GPPmax}{If restart, maximum GPP across full time series}
 }
 \value{
 Updated dataframe containing:
@@ -63,6 +75,8 @@ Updated dataframe containing:
 (g C CH4 m^-3, top meter of soil and water)}
 \item{trans2}{fraction of methane released via plant-mediated transport
 (unitless)}
+\item{CH4water_store}{methane pool stored in soil after emission
+(g C CH4 m^-3, top meter of soil and water)}
 }
 }
 \description{
@@ -98,7 +112,6 @@ are used in every module.
 \item Leaf Area Index
 \item Greenness Index
 \item FPAR flag
-\item Light Use Efficiency
 \item Wetland age (years)
 \item Salinity (ppt)
 \item NO3 (mg L^-1)

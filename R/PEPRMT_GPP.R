@@ -86,6 +86,7 @@
 #' # data(example_dataset)
 #' # out <- PEPRMT_GPP(theta, example_dataset, wetland_type = 2)
 PEPRMT_GPP <- function(data,
+                       LUE,
                        a0 = 0.7479271,
                        a1 = 1.0497113,
                        Ha = 149.4681710 + 30,
@@ -100,7 +101,7 @@ PEPRMT_GPP <- function(data,
   data <- data.frame(data)
   expected_colnames <- c(
     "DOY", "DOY_disc", "Year", "TA_C", "WTD_cm",
-    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "LUE", "Wetland_age_years",
+    "PAR_umol_m2_day", "LAI", "EVI", "FPAR", "Wetland_age_years",
     "Salinity_daily_ave_ppt", "NO3_mg_L",
     "SOM_MEM_gC_m3", "site"
   )
@@ -111,6 +112,12 @@ PEPRMT_GPP <- function(data,
       paste(expected_colnames[!expected_colnames %in% colnames(data)],
         collapse = ", "
       )
+    ))
+  }
+  
+  if (length(unique(data$site)) > 1) {
+    stop(paste0(
+      "PEPRMT-Tidal no longer supports running multiple sites at once"
     ))
   }
 
@@ -149,7 +156,6 @@ PEPRMT_GPP <- function(data,
     LAI_2 <- d$LAI # Leaf area index (if not using can be 0s or NaN)
     GI_2 <- d$EVI # greeness index from Phenocam (GCC) or Landsat EVI etc (unitless)
     FPAR <- d$FPAR # If using LAI data, set FPAR variable to 1's, if using a greenness index set FPAR to 0's
-    LUE <- d$LUE # growing season LUE computed for each site using measured GPP in gC per umol
     wetland_age_2 <- d$Wetland_age_years # Age of wetland in years
     Sal <- d$Salinity_daily_ave_ppt # Salinity (ppt)
     NO3 <- d$NO3_mg_L # Dissolved NO3 (mg/L)
@@ -191,7 +197,7 @@ PEPRMT_GPP <- function(data,
       bottom <- Hd - (Ha * (1 - exp(exponent2)))
       vct[t] <- vcopt * (top / bottom)
 
-      NPP_FPAR_T[t] <- ((vct[t] * (APAR_2[t] * LUE[t]))) # umol m-2 d-1* gC/umol == g C m-2 d-1
+      NPP_FPAR_T[t] <- ((vct[t] * (APAR_2[t] * LUE))) # umol m-2 d-1* gC/umol == g C m-2 d-1
     }
 
     GPP_mod <- (NPP_FPAR_T) * -1 # stay as g C m-2 d-1 where negative values= uptake
