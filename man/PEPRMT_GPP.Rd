@@ -11,11 +11,14 @@ PEPRMT_GPP(
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
   Hd = 94.4532674 + 100,
-  T_opt_GPP = 25 + 274.15
+  T_opt_GPP = 25 + 274.15,
+  VPD_lim = F,
+  VPD_ref = 0.2,
+  k_VPD = 0.23
 )
 }
 \arguments{
-\item{data}{Data frame containing 15 required columns used as model inputs.
+\item{data}{Data frame containing required columns used as model inputs.
 See \strong{Details} for expected column structure.}
 
 \item{LUE}{Light use efficiency at this site}
@@ -36,6 +39,15 @@ above the thermal optimum (kJ mol^-1).
 Determines the rate of decrease in GPP at high temperatures.}
 
 \item{T_opt_GPP}{Temperature optimum for GPP}
+
+\item{VPD_lim}{Logical. Whether to apply VPD limitation of photosynthesis.
+Defaults to FALSE to preserve the original model formulation.}
+
+\item{VPD_ref}{Reference daytime-average VPD (kPa) at which the VPD
+limitation scalar equals 1. Defaults to 0.2 kPa, following Knox et al. (2018).}
+
+\item{k_VPD}{VPD sensitivity parameter (kPa^-1). Defaults to 0.23,
+following Knox et al. (2018).}
 }
 \value{
 Updated dataframe containing:
@@ -84,6 +96,7 @@ or remote sensing such as EVI or NDVI PEPRMT-Tidal applied in Oikawa et al.
 \item NO3 (mg L^-1)
 \item Soil organic matter (g C m^-3)
 \item Site identifier
+\item VPD_kPa
 }
 }
 \examples{

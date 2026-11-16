@@ -3,7 +3,7 @@
 #' Runs the PEPRMT gross primary productivity module for freshwater peatlands or
 #' tidal wetlands at a daily time step.
 #'
-#' @param data Data frame containing 15 required columns used as model inputs.
+#' @param data Data frame containing required columns used as model inputs.
 #'   See **Details** for expected column structure.
 #' @param LUE Light use efficiency at this site
 #' @param a0 Empirical intercept parameter for the fPAR scaling function 
@@ -18,6 +18,12 @@
 #'   above the thermal optimum (kJ mol^-1).
 #'   Determines the rate of decrease in GPP at high temperatures.
 #' @param T_opt_GPP Temperature optimum for GPP
+#' @param VPD_lim Logical. Whether to apply VPD limitation of photosynthesis.
+#'   Defaults to FALSE to preserve the original model formulation.
+#' @param VPD_ref Reference daytime-average VPD (kPa) at which the VPD
+#'   limitation scalar equals 1. Defaults to 0.2 kPa, following Knox et al. (2018).
+#' @param k_VPD VPD sensitivity parameter (kPa^-1). Defaults to 0.23,
+#'   following Knox et al. (2018).
 #'
 #' @description
 #' Gross Primary Productivity (GPP) module of the PEPRMT model (v1.0). 
@@ -53,6 +59,7 @@
 #' 12. NO3 (mg L^-1)
 #' 13. Soil organic matter (g C m^-3)
 #' 14. Site identifier
+#' 15. VPD_kPa
 #'
 #' @returns Updated dataframe containing:
 #' \describe{
@@ -91,7 +98,10 @@ PEPRMT_GPP <- function(data,
                        a1 = 1.0497113,
                        Ha = 149.4681710 + 30,
                        Hd = 94.4532674 + 100,
-                       T_opt_GPP = 25 + 274.15 # (K); our Temp opt for Ps is 25C
+                       T_opt_GPP = 25 + 274.15, # (K); our Temp opt for Ps is 25C
+                       VPD_lim = F,
+                       VPD_ref = 0.2,
+                       k_VPD = 0.23
                        ) {
   
   # -------------------------
@@ -105,6 +115,8 @@ PEPRMT_GPP <- function(data,
     "Salinity_daily_ave_ppt", "NO3_mg_L",
     "SOM_MEM_gC_m3", "site"
   )
+  
+  if(VPD_lim){expected_colnames <- c(expected_colnames, "VPD_kPa")}
 
   if (!all(expected_colnames %in% colnames(data))) {
     stop(paste0(
@@ -162,6 +174,12 @@ PEPRMT_GPP <- function(data,
     # Season_drop_2 <- d[,13] #not used in PEPRMT-Tidal (was used in original PEPRMT model in peatlands)
     # Season variable that is set to 1 in winter (DOY 1-88, 336-365), 2 pre-spring (DOY 89-175), 3 spring (DOY 176-205), 4 summer (DOY 206-265), 5 fall (DOY 266-335)
     SOM_2 <- d$SOM_MEM_gC_m3 # Decomposed Organic matter : all the decomposed soil organic matter in top meter of soil informed buy MEM inclusive of current year
+    if (VPD_lim) {
+      VPD_2 <- d$VPD_kPa # Vapor pressure deficit (kPa)
+      fVPD_2 <- exp(-k_VPD * (VPD_2 - VPD_ref))
+    } else {
+      fVPD_2 <- rep(1, nrow(d))
+    }
     site <- d$site # Unique site ID
 
 
@@ -197,7 +215,7 @@ PEPRMT_GPP <- function(data,
       bottom <- Hd - (Ha * (1 - exp(exponent2)))
       vct[t] <- vcopt * (top / bottom)
 
-      NPP_FPAR_T[t] <- ((vct[t] * (APAR_2[t] * LUE))) # umol m-2 d-1* gC/umol == g C m-2 d-1
+      NPP_FPAR_T[t] <- (vct[t] * APAR_2[t] * LUE * fVPD_2[t]) # umol m-2 d-1* gC/umol == g C m-2 d-1
     }
 
     GPP_mod <- (NPP_FPAR_T) * -1 # stay as g C m-2 d-1 where negative values= uptake
