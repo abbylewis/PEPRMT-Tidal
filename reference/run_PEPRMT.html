@@ -68,7 +68,10 @@
 <span>  prev_S2sol <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  prev_CH4water_store <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  prev_WT_2_adj <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  GPPmax <span class="op">=</span> <span class="fl">0</span></span>
+<span>  GPPmax <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  VPD_lim <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>  VPD_ref <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  k_VPD <span class="op">=</span> <span class="fl">0.23</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -207,6 +210,21 @@ converted to model units ((WT_2 / 100) + 1)</p></dd>
 
 <dt id="arg-gppmax">GPPmax<a class="anchor" aria-label="anchor" href="#arg-gppmax"></a></dt>
 <dd><p>If restart, maximum GPP across full time series</p></dd>
+
+
+<dt id="arg-vpd-lim">VPD_lim<a class="anchor" aria-label="anchor" href="#arg-vpd-lim"></a></dt>
+<dd><p>Logical. Whether to apply VPD limitation of photosynthesis.
+Defaults to FALSE to preserve the original model formulation.</p></dd>
+
+
+<dt id="arg-vpd-ref">VPD_ref<a class="anchor" aria-label="anchor" href="#arg-vpd-ref"></a></dt>
+<dd><p>Reference daytime-average VPD (kPa) at which the VPD
+limitation scalar equals 1. Defaults to 0.2 kPa, following Knox et al. (2018).</p></dd>
+
+
+<dt id="arg-k-vpd">k_VPD<a class="anchor" aria-label="anchor" href="#arg-k-vpd"></a></dt>
+<dd><p>VPD sensitivity parameter (kPa^-1). Defaults to 0.23,
+following Knox et al. (2018).</p></dd>
 
 </dl></div>
     <div class="section level2">
