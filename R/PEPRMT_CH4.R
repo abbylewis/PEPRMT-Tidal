@@ -317,7 +317,7 @@ PEPRMT_CH4 <- function(data,
         }
 
         if (WT_2_adj[t] < 0) {
-          M_percent_reduction[t] <- 0.001 
+          M_percent_reduction[t] <- 0
         }
 
         if (M_percent_reduction[t] < 0) {
@@ -362,7 +362,7 @@ PEPRMT_CH4 <- function(data,
 
       #---COMPUTE CH4 TRANSPORT---
       # make sure WT_2_adj is never negative
-      if (WT_2_adj[t] < 0) {
+      if (WT_2_adj[t] <= 0) {
         WT_2_adj[t] <- 0.001 # set to 0.001 because we can't divide by 0
       }
 
