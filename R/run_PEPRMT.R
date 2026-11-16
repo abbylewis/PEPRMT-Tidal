@@ -211,7 +211,10 @@ run_PEPRMT <- function(data,
                              a1 = a1,
                              Ha = Ha,
                              Hd = Hd,
-                             T_opt_GPP = T_opt_GPP)
+                             T_opt_GPP = T_opt_GPP,
+                             VPD_lim = VPD_lim,
+                             VPD_ref = VPD_ref, 
+                             k_VPD = k_VPD)
 
   # Create a new dataset that includes model results
   results <- data |>
