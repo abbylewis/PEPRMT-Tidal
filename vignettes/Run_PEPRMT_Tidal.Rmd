@@ -29,6 +29,7 @@ library(ggplot2)
 
 summary(example_data)
 str(example_data)
+example_data <- PEPRMT::example_data
 ```
 
 First, run GPP Module

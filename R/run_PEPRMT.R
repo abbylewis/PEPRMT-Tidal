@@ -54,6 +54,12 @@
 #' @param prev_WT_2_adj If restart, previous water level, 
 #'   converted to model units ((WT_2 / 100) + 1)
 #' @param GPPmax If restart, maximum GPP across full time series
+#' @param VPD_lim Logical. Whether to apply VPD limitation of photosynthesis.
+#'   Defaults to FALSE to preserve the original model formulation.
+#' @param VPD_ref Reference daytime-average VPD (kPa) at which the VPD
+#'   limitation scalar equals 1. Defaults to 0.2 kPa, following Knox et al. (2018).
+#' @param k_VPD VPD sensitivity parameter (kPa^-1). Defaults to 0.23,
+#'   following Knox et al. (2018).
 #'
 #' @description
 #' Wrapper function to run all steps of the PEPRMT model (v1.0).
@@ -144,7 +150,10 @@ run_PEPRMT <- function(data,
                        prev_S2sol = 0,
                        prev_CH4water_store = 0,
                        prev_WT_2_adj = 0, # (WT_2 / 100) + 1
-                       GPPmax = 0
+                       GPPmax = 0,
+                       VPD_lim = F,
+                       VPD_ref = 0.2,
+                       k_VPD = 0.23
                        ) {
   # -------------------------
   # Check data structure
