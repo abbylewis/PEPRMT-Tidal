@@ -14,7 +14,10 @@ PEPRMT_GPP(
   a1 = 1.0497113,
   Ha = 149.468171 + 30,
   Hd = 94.4532674 + 100,
-  T_opt_GPP = 25 + 274.15
+  T_opt_GPP = 25 + 274.15,
+  VPD_lim = F,
+  VPD_ref = 0.2,
+  k_VPD = 0.23
 )
 ```
 
@@ -22,7 +25,7 @@ PEPRMT_GPP(
 
 - data:
 
-  Data frame containing 15 required columns used as model inputs. See
+  Data frame containing required columns used as model inputs. See
   **Details** for expected column structure.
 
 - LUE:
@@ -53,6 +56,21 @@ PEPRMT_GPP(
 - T_opt_GPP:
 
   Temperature optimum for GPP
+
+- VPD_lim:
+
+  Logical. Whether to apply VPD limitation of photosynthesis. Defaults
+  to FALSE to preserve the original model formulation.
+
+- VPD_ref:
+
+  Reference daytime-average VPD (kPa) at which the VPD limitation scalar
+  equals 1. Defaults to 0.2 kPa, following Knox et al. (2018).
+
+- k_VPD:
+
+  VPD sensitivity parameter (kPa^-1). Defaults to 0.23, following Knox
+  et al. (2018).
 
 ## Value
 
@@ -115,6 +133,8 @@ Oikawa et al. 2023 uses EVI from Landsat
 13. Soil organic matter (g C m^-3)
 
 14. Site identifier
+
+15. VPD_kPa
 
 ## References
 

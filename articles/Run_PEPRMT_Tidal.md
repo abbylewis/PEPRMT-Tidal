@@ -186,7 +186,7 @@ example_data_results |>
     breaks = c("Observed", "Modeled", "Modeled2"),
     values = c("black", "red", "blue")
   ) +
-  labs(x = "", y = bquote("CH4 " ~ (mgC ~ m^-2 ~ d^-1))) +
+  labs(x = "", y = bquote(CH[4] ~ (mgC ~ m^-2 ~ d^-1))) +
   theme_bw(base_size = 12) +
   theme(
     axis.line = element_line(colour = "black"),
@@ -17933,3 +17933,59 @@ comb |>
 ```
 
 ![](Run_PEPRMT_Tidal_files/figure-html/restart-1.png)
+
+``` r
+
+
+comb |>
+  ggplot(aes(DOY)) +
+  geom_line(aes(x = DOY, y = S1sol * 1000, color = "Original")) +
+  geom_line(aes(x = DOY, y = S1sol_restart * 1000, color = "Restart")) +
+  scale_color_manual(
+    breaks = c("Original", "Restart"),
+    values = c("black", "red")
+  ) +
+  labs(x = "", y = "Slow C") +
+  theme_bw(base_size = 12) +
+  theme(
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "black"),
+    panel.background = element_blank(),
+    legend.position = "center"
+  ) +
+  facet_wrap(~site, ncol = 1, scales = "free")
+#> Warning: Removed 500 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+```
+
+![](Run_PEPRMT_Tidal_files/figure-html/restart-2.png)
+
+``` r
+
+
+comb |>
+  ggplot(aes(DOY)) +
+  geom_line(aes(x = DOY, y = S2sol * 1000, color = "Original")) +
+  geom_line(aes(x = DOY, y = S2sol_restart * 1000, color = "Restart")) +
+  scale_color_manual(
+    breaks = c("Original", "Restart"),
+    values = c("black", "red")
+  ) +
+  labs(x = "", y = "Labile C") +
+  theme_bw(base_size = 12) +
+  theme(
+    axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "black"),
+    panel.background = element_blank(),
+    legend.position = "center"
+  ) +
+  facet_wrap(~site, ncol = 1, scales = "free")
+#> Warning: Removed 500 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+```
+
+![](Run_PEPRMT_Tidal_files/figure-html/restart-3.png)
